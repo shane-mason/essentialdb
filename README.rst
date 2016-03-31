@@ -4,14 +4,16 @@ EssentialDB
 A Fast Embedded Database in Python.
 ------------------------------------
 
-EssentialDB attempts to solve a common use case: you want a very simple data
-access
+EssentialDB attempts to solve a common use case: you want a very simple data access mechanism without a heavyweight install.
 
-* Syntax and semantics are very similar to Mongo, lowering the barrier of
-entry.
+* Syntax and semantics are very similar to Mongo, lowering the barrier of entry.
 * Fairly complex query support.
 * Its in pure python.
 * Its very fast.
+
+Current Status
+---------------
+Just getting started!
 
 Quickstart
 -----------
