@@ -72,6 +72,15 @@ class SimpleCollection:
                         return False
             return True
 
+        def _test_comparison(field, query, doc):
+
+            try:
+                # then is is something like  { "$eq": 12 }
+                operator = list(query.keys())[0]
+                compareto = query[operator]
+                return Keys.comparisons[operator](doc[field], compareto)
+            except:
+                return False
 
         results = []
         # first, is it by id?
@@ -92,6 +101,8 @@ class SimpleCollection:
                         matches = _test_nor(query[key], self.documents[_id])
                     elif key == Keys._and:
                         matches = _test_and(query[key], self.documents[_id])
+                    elif isinstance(query[key], dict):
+                        matches = _test_comparison(key, query[key], self.documents[_id])
                     elif key not in self.documents[_id] or query[key] != self.documents[_id][key]:
                         matches = False
 

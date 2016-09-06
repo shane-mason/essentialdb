@@ -94,6 +94,63 @@ class TestEssentialDB(unittest.TestCase):
         results = self.collection.count()
         self.assertEqual(results, 0)
 
+    def test_eq(self):
+        self.collection.insert_many(self.docs)
+        q = {"field 1": {"$eq": self.docs[3]["field 1"]}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+
+    def test_gt(self):
+        self.docs[6]["number"] = 11
+        self.collection.insert_many(self.docs)
+        q = {"number": {"$gt": 10}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+
+    def test_gte(self):
+        self.docs[6]["number"] = 11
+        self.collection.insert_many(self.docs)
+        q = {"number": {"$gte": 11}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+
+    def test_lt(self):
+        self.docs[6]["number"] = 9
+        self.collection.insert_many(self.docs)
+        q = {"number": {"$lt": 10}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+
+    def test_lte(self):
+        self.docs[6]["number"] = 9
+        self.collection.insert_many(self.docs)
+        q = {"number": {"$lte": 9}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+
+    def test_ne(self):
+        self.docs[6]["number"] = 9
+        self.collection.insert_many(self.docs)
+        q = {"number": {"$ne": 10}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+
+    def test_in(self):
+        self.docs[6]["number"] = 6
+        self.docs[7]["number"] = 7
+        self.collection.insert_many(self.docs)
+        q = {"number": {"$in": [6, 7]}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 2)
+
+    def test_nin(self):
+        self.docs[6]["number"] = 6
+        self.docs[7]["number"] = 7
+        self.collection.insert_many(self.docs)
+        q = {"number": {"$nin": [6, 7]}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), len(self.docs)-2)
+
     def test_sync_load(self):
         with EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE) as db:
 #            db = EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE)
@@ -125,6 +182,7 @@ def _gen_docs(count=1):
             "field 0": _gen_text(),
             "field 1": _gen_text(),
             "field 2": _gen_text(),
+            "number": 10
         }
 
         docs.append(doc)

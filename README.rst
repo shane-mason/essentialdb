@@ -65,3 +65,47 @@ Remove Items::
 Write updates to disk::
 
   authorDB.sync()
+
+Queries
+--------
+
+Queries in EssentialDB follow the same basic form as MongoDB::
+
+    { <field1>: { <operator1>: <value1> }, ... }
+
+
+Comparison Query Selectors
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+The $eq operator matches documents where the value of a field equals the specified value::
+
+    authorDB.find({"born" : {"$eq": 1972}})
+
+The $ne operator matches documents where the value of a field is not equal to the specified value::
+
+    authorDB.find({"born" : {"$ne": 1972}})
+
+The $gt operator matches documents where the value of a field is greater than the specified value::
+
+    authorDB.find({"born" : {"$gt": 1900}})
+
+The $gte operator matches documents where the value of a field is great than or equal to the specified value:
+
+    authorDB.find({"born" : {"$gte": 1900}})
+
+The $lt operator matches documents where the value of a field is less than the specified value::
+
+    authorDB.find({"born" : {"$lt": 1900}})
+
+
+The $lte operator matches documents where the value of a field is less than or equal to the specified value::
+
+    authorDB.find({"born" : {"$lte": 1900}})
+
+The $in operator matches documents where the value of a field is equal any item in the specified array::
+
+    authorDB.find({"genre" : {"$in": ["tragedy", "drama"]}})
+
+The $nin operator matches documents where the value of a field is not equal to any item in the specified array::
+
+    authorDB.find({"genre" : {"$nin": ["tragedy", "drama"]}})
