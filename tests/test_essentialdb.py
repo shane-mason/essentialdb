@@ -76,6 +76,40 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(q)
         self.assertEqual(len(response), 1)
 
+    def test_find_or_complex(self):
+        self.docs[0]["number"] = 0
+        self.docs[1]["number"] = 5
+        self.docs[2]["number"] = 20
+        self.docs[3]["number"] = 25
+
+        self.collection.insert_many(self.docs)
+        q = {"$or": [{"number": {"$eq": 5}}, {"number": {"$eq": 20}}]}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 2)
+
+    def test_find_nor_complex(self):
+        self.docs[0]["number"] = 0
+        self.docs[1]["number"] = 5
+
+        self.collection.insert_many(self.docs)
+        q = {"$nor": [{"number": {"$eq": 10}}, {"number": {"$eq": 0}}]}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+
+    def test_find_and_complex(self):
+        self.docs[0]["number"] = 0
+        self.docs[0]["field 0"] = "Hello"
+        self.docs[5]["number"] = 2
+        self.docs[5]["field 0"] = "Hello"
+        self.docs[7]["number"] = 4
+        self.docs[7]["field 0"] = "Bye"
+
+        self.collection.insert_many(self.docs)
+        q = {"$and": [{"number": {"$lt": 2}}, {"field 0": {"$eq": "Hello"}}]}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+
+
     def test_update_one(self):
         self.collection.insert_many(self.docs)
         self.collection.update({"field 0": self.docs[5]["field 0"], "field 1": self.docs[5]["field 1"]}, {"field 2": "Hello"})
@@ -150,6 +184,7 @@ class TestEssentialDB(unittest.TestCase):
         q = {"number": {"$nin": [6, 7]}}
         response = self.collection.find(q)
         self.assertEqual(len(response), len(self.docs)-2)
+
 
     def test_sync_load(self):
         with EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE) as db:

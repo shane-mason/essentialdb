@@ -6,7 +6,7 @@ A Fast Embedded Database in Python.
 
 EssentialDB attempts to solve a common use case: you want a very simple data access mechanism without a heavyweight install.
 
-* Syntax and semantics are very similar to Mongo, lowering the barrier of entry.
+* Syntax and semantics are very similar to MongoDB, lowering the barrier of entry.
 * Fairly complex query support.
 * Its in pure python.
 * Its very fast.
@@ -89,7 +89,7 @@ The $gt operator matches documents where the value of a field is greater than th
 
     authorDB.find({"born" : {"$gt": 1900}})
 
-The $gte operator matches documents where the value of a field is great than or equal to the specified value:
+The $gte operator matches documents where the value of a field is great than or equal to the specified value::
 
     authorDB.find({"born" : {"$gte": 1900}})
 

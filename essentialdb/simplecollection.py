@@ -51,26 +51,7 @@ class SimpleCollection:
         """
 
         """
-        def _test_or(query_list, doc):
-            for q in query_list:
-                for field in q:
-                    if field in doc and q[field] == doc[field]:
-                        return True
-            return False
 
-        def _test_nor(query_list, doc):
-            for q in query_list:
-                for field in q:
-                    if field in doc and q[field] == doc[field]:
-                        return False
-            return True
-
-        def _test_and(query_list, doc):
-            for q in query_list:
-                for field in q:
-                    if field not in doc or q[field] != doc[field]:
-                        return False
-            return True
 
         def _test_comparison(field, query, doc):
 
@@ -81,6 +62,36 @@ class SimpleCollection:
                 return Keys.comparisons[operator](doc[field], compareto)
             except:
                 return False
+
+
+        def _test_or(query_list, doc):
+            for q in query_list:
+                for field in q:
+                    if isinstance(q[field], dict) and   _test_comparison(field, q[field], doc):
+                        return True
+                    elif field in doc and q[field] == doc[field]:
+                        return True
+            return False
+
+        def _test_nor(query_list, doc):
+            for q in query_list:
+                for field in q:
+                    if isinstance(q[field], dict) and  _test_comparison(field, q[field], doc):
+                        return False
+                    elif field in doc and q[field] == doc[field]:
+                        return False
+            return True
+
+        def _test_and(query_list, doc):
+            for q in query_list:
+                for field in q:
+                    if isinstance(q[field], dict):
+                        if not _test_comparison(field, q[field], doc):
+                            return False
+                    elif field not in doc or q[field] != doc[field]:
+                        return False
+            return True
+
 
         results = []
         # first, is it by id?
@@ -102,6 +113,7 @@ class SimpleCollection:
                     elif key == Keys._and:
                         matches = _test_and(query[key], self.documents[_id])
                     elif isinstance(query[key], dict):
+                        #something like {"field': {'$eq': 'something'}}
                         matches = _test_comparison(key, query[key], self.documents[_id])
                     elif key not in self.documents[_id] or query[key] != self.documents[_id][key]:
                         matches = False
