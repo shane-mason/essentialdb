@@ -4,7 +4,11 @@ EssentialDB
 A Fast Embedded Database in Python.
 ------------------------------------
 
-EssentialDB attempts to solve a common use case: you want a very simple data access mechanism without a heavyweight install.
+Use case: You want to prototype an idea wihtout a heavyweight database install. If the idea works out though, you don't want
+to rewrite all of your data access code.
+
+EssentialDB helps solve that problem by being (nearly) api compatible with MongoDB. That way when your idea starts to grow,
+you can switch to MongoDB to scale.
 
 * Syntax and semantics are very similar to MongoDB, lowering the barrier of entry.
 * Fairly complex query support.
@@ -18,53 +22,58 @@ Just getting started!
 Quickstart
 -----------
 
-Create a database::
+Basic usage is straightforward::
 
-  from essentialdb import EssentialDB, SimpleCollection
-  authorDB = EssentialDB(collection=SimpleCollection(), filepath="authors.db")
+    from essentialdb import EssentialDB
+    #create or open the database
+    author_db = EssentialDB(filepath="authors.db")
+    #insert a document into the database
+    author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
+    #find some entries
+    results = author_db.find({"last':'Hughes'}
+    #commit the changes to disk
+    author_db.sync()
 
-Create a database using with::
+Or using the 'with' semantics to assure that write happen without having to explicitly call sync::
 
-  with EssentialDB(collection=SimpleCollection(), filepath="authors.db") as authorsDB:
-    #perform database operations here
-    pass
+    with EssentialDB(filepath="authors.db") as author_db:
+        author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
 
-  #database is closed and synced here
 
 Insert a document::
 
   author = {'first': 'Langston', 'last': 'Hughes', 'born': 1902}
-  authorDB.insert_one(author)
+  author_db.insert_one(author)
 
 Insert many documents::
 
   authors = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
              {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
-  authorDB.insert_many(authors)
+  author_db.insert_many(authors)
 
 Find one document::
 
-  document = authorDB.find_one({'first': 'Ezra', 'last': 'Pound'})
+  document = author_db.find_one({'first': 'Ezra', 'last': 'Pound'})
 
 Find many::
 
-  documents = authorDB.find({'born': {'$gt': 1900}})
+  documents = author_db.find({'born': {'$gt': 1900}})
 
 Update one::
 
-  updated = authorDB.update({'_id': {'$eq': "A345i"}}, {'born': 1902})
+  updated = author_db.update({'_id': {'$eq': "A345i"}}, {'born': 1902})
 
 Update many::
 
-  updated = authorDB.update({'born': {'$gt': 1900}}, {'period': 'Modern'})
+  updated = author_db.update({'born': {'$gt': 1900}}, {'period': 'Modern'})
 
 Remove Items::
 
-  removed = authorDB.remove({'period':'Modern'))
+  removed = author_db.remove({'period':'Modern'))
 
 Write updates to disk::
 
-  authorDB.sync()
+  author_db.sync()
 
 Queries
 --------
@@ -72,6 +81,7 @@ Queries
 Queries in EssentialDB follow the same basic form as MongoDB::
 
     { <field1>: { <operator1>: <value1> }, ... }
+
 
 
 Comparison Query Selectors
@@ -109,3 +119,23 @@ The $in operator matches documents where the value of a field is equal any item 
 The $nin operator matches documents where the value of a field is not equal to any item in the specified array::
 
     authorDB.find({"genre" : {"$nin": ["tragedy", "drama"]}})
+
+
+Boolean Operators
+^^^^^^^^^^^^^^^^^
+The $and operator matches documents where all the fields match::
+
+    #find authors born after 1900 and before 2000
+    author_db.find({'$and':[{'born': {'$gte': 1900}},{'born': {'$lt': 2000}}]})
+
+The $or operator matches documents where any of the fields match::
+
+    #find authors with either the first or last name John
+    author_db.find({'$or':[{'first': {'$eg': 'John'}},{'last': {'$eq': 'John'}}]})
+
+The $nor operator matches document where none of the conditions match::
+
+    #find all authors who have neither the first or last name John
+    author_db.find({"$nor":[{'first': {"$eq": 'John'}},{'last': {'$eq': 'John'}}]})
+
+

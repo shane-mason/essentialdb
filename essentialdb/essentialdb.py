@@ -14,35 +14,50 @@ import uuid
 
 class EssentialDB:
     """
-    EssentialDB class is the front end interface to the EssentialDB database. A BreezeBlock instance is equivalent to
-    a collection.
-
-    To initiate with the 'module level' universal collection and no disk persistence, use:
+    EssentialDB class is the front end interface to the EssentialDB database.
 
         from essentialdb import EssentialDB
+        #create or open the database
+        author_db = EssentialDB(filepath="authors.db")
+        #insert a document into the database
+        author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
+        #find some entries
+        results = author_db.find({"last':'Hughes'}
+        #commit the changes to disk
+        author_db.sync()
 
-        blocks = EssentialDB()
 
-    When using the universal collection, all other BreezeBlock instances will recieve the same store.
+    You can also use with semantics to assure that the database is closed and synced on exit
 
-    To initiate with separate collections, initiate like so:
-
-        books = EssentialDB(collection=SimpleCollection())
-        authors = EssentialDB(collection=SimpleCollection())
-
-    For deferred disk persistence, use filepath:
-
-        books = EssentialDB(collection=SimpleCollection(), filepath="mydatabase.db")
-
+        with EssentialDB(filepath="authors.db") as author_db:
+            authors = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
+            {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
+            author_db.insert_many()
 
     """
-    def __init__(self, collection=SimpleCollection(), filepath=None, autosync=False):
+    def __init__(self, filepath=None, collection=None):
+        """
+
+        Kwargs:
+            filepath (str): Database file path, will be created if it doesn't exist.
+            collection (Collection): Defaults to SimpleCollection
+
+        Returns:
+            The unique identifier for the inserted document
+
+        Example:
+            author_db = EssentialDB(filepath="authors.db")
+
+        """
+        if collection is None:
+            collection = SimpleCollection()
         self.collection = collection
+
         self.filepath=filepath
-        if filepath is not None:
+        if self.filepath is not None:
             self.collection._load(filepath)
 
-        self.autosync = autosync
+        self.autosync = False
 
     def __del__(self):
         #TODO: Test if dirty before forcing sync
@@ -77,8 +92,10 @@ class EssentialDB:
 
         Example:
 
-            author = {'first': 'Langston', 'last': 'Hughes', 'born': 1902}
-            EssentialDB().insert_one(author)
+            with EssentialDB(filepath="authors.db") as author_db:
+                #documents are just dictionaries
+                author = {'first': 'Langston', 'last': 'Hughes', 'born': 1902}
+                author_db.insert_one(author)
 
         """
         if _id is not None:
@@ -114,6 +131,10 @@ class EssentialDB:
 
         Returns:
             The unique identifier for the inserted document
+
+        Example:
+            with EssentialDB(filepath="cache.db") as request_cache:
+                request_cache.set( request.url, response.text )
         """
         self.collection.set(key, value)
         self._cleanup()
@@ -132,6 +153,10 @@ class EssentialDB:
         Returns:
             The document (dict) if found.
 
+        Example:
+            with EssentialDB(filepath="cache.db") as request_cache:
+                response.text = request_cache.get( request.url )
+
         """
         return self.collection.get(key)
 
@@ -147,9 +172,10 @@ class EssentialDB:
 
         Example:
 
-            authors = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
-                       {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
-            EssentialDB().insert_many(authors)
+            with EssentialDB(filepath="authors.db") as author_db:
+                authors = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
+                {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
+                author_db.insert_many()
 
         """
         for doc in documents:
@@ -170,7 +196,8 @@ class EssentialDB:
 
         Example:
 
-            document = EssentialDB().find_one({'first': 'Ezra', 'last': 'Pound'})
+            with EssentialDB(filepath="authors.db") as author_db:
+                document = author_db.find_one({'first': 'Ezra', 'last': 'Pound'})
 
         """
         return self.collection.find_one(query, filter)
@@ -188,7 +215,8 @@ class EssentialDB:
 
         Example:
 
-            documents = EssentialDB().find({'color': 'blue'}})
+            with EssentialDB(filepath="authors.db") as author_db:
+                document = author_db.find({'last': 'Smith'})
 
         """
 
@@ -206,8 +234,8 @@ class EssentialDB:
             The number of documents updated.
 
         Example:
-
-            updated = EssentialDB().update({'year': {'$gt': 1900}}, {'period': 'Modern'})
+            with EssentialDB(filepath="authors.db") as author_db:
+                updated = uathor_db.update({'year': {'$gt': 1900}}, {'period': 'Modern'})
 
         """
         results = self.collection.update(query, update)
@@ -231,9 +259,8 @@ class EssentialDB:
             The number of documents removed.
 
         Example:
-
-            removed = EssentialDB().remove({'period':'Modern'))
-
+            with EssentialDB(filepath="authors.db") as author_db:
+                document = author_db.remove({'period': 'Modern'})
         """
         results = self.collection.remove(query)
         self._cleanup()

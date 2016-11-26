@@ -3,7 +3,6 @@ import unittest
 import time
 __author__ = 'scmason'
 
-
 class Timer:
 
     def __init__(self, verbose=False):

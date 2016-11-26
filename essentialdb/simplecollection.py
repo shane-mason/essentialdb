@@ -1,36 +1,28 @@
 __author__ = 'scmason'
 
 import datetime
-
 import random
 import pickle
 from essentialdb import Keys
+from essentialdb import SimpleDocument
 
 
 class SimpleCollection:
     """
     SimpleCollection implements a simple collection store with rudimentary disk
-    persistence. 
-
+    persistence and all the logic required to query the store. This class can be
+    extended to add or alter database functionality.
     """
 
 
     def __init__(self):
-        self.documents = {}
-        self.queue = None
-        self.writer = None
+        self.documents = SimpleDocument()
 
-    #        self.setup(cPickle_writer)
-
-    def setup(self, writer_function, filepath="bb.out"):
+    def setup(self, filepath="bb.out"):
         self.filepath = filepath
 
-    #        self.queue = Queue()
-    #        self.writer = Process(target=writer_function, args=(self.queue,filepath) )
-    #        self.writer.start()
-
     def insert_one(self, document):
-        self.documents[document["_id"]] = document
+        self.documents[document["_id"]] = SimpleDocument(document)
         return document["_id"]
 
     def insert_many(self, documents):
@@ -51,6 +43,13 @@ class SimpleCollection:
         """
 
         """
+
+        def dot_get(d, keys):
+            if "." in keys:
+                key, rest = keys.split(".", 1)
+                return dot_get(d[key], rest)
+            else:
+                return d[keys]
 
 
         def _test_comparison(field, query, doc):
@@ -115,6 +114,11 @@ class SimpleCollection:
                     elif isinstance(query[key], dict):
                         #something like {"field': {'$eq': 'something'}}
                         matches = _test_comparison(key, query[key], self.documents[_id])
+                    elif isinstance(key, str) and "." in key:
+                        if query[key] != self.documents[_id][key]:
+                            matches = False
+                        else:
+                            matches = True
                     elif key not in self.documents[_id] or query[key] != self.documents[_id][key]:
                         matches = False
 
@@ -183,3 +187,4 @@ class SimpleCollection:
                 self.documents = db["documents"]
         except:
             self.documents = {}
+

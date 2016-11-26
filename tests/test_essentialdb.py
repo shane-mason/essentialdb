@@ -10,16 +10,16 @@ SYNC_DB_FILE = "sync_test_db"
 class TestEssentialDB(unittest.TestCase):
 
     def setUp(self):
-        self.collection = EssentialDB(SimpleCollection())
+        self.collection = EssentialDB()
         self.docs = _gen_docs(10)
 
 
     def test_set_get(self):
-        self.collection.set("my.test.number", 1)
-        self.collection.set("my.test.string", "Hello")
+        self.collection.set("my-test-number", 1)
+        self.collection.set("my-test-string", "Hello")
 
-        num = self.collection.get("my.test.number")
-        text = self.collection.get("my.test.string")
+        num = self.collection.get("my-test-number")
+        text = self.collection.get("my-test-string")
 
         self.assertEqual(num, 1)
         self.assertEqual(text, "Hello")
@@ -43,6 +43,11 @@ class TestEssentialDB(unittest.TestCase):
     def test_find_one_complex_query(self):
         self.collection.insert_many(self.docs)
         response = self.collection.find_one({"field 0": self.docs[5]["field 0"], "field 1": self.docs[5]["field 1"]})
+        self.assertEqual(response["_id"], self.docs[5]["_id"])
+
+    def test_find_one_complex_dot_query(self):
+        self.collection.insert_many(self.docs)
+        response = self.collection.find_one({"nested.n0": self.docs[5]["nested"]["n0"], "nested.n1": self.docs[5]["nested"]["n1"]})
         self.assertEqual(response["_id"], self.docs[5]["_id"])
 
     def test_find_one_filter(self):
@@ -186,6 +191,17 @@ class TestEssentialDB(unittest.TestCase):
         self.assertEqual(len(response), len(self.docs)-2)
 
 
+    def test_nin(self):
+        self.docs[6]["number"] = 6
+        self.docs[7]["number"] = 7
+        self.collection.insert_many(self.docs)
+        q = {"number": {"$nin": [6, 7]}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), len(self.docs)-2)
+
+
+
+
     def test_sync_load(self):
         with EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE) as db:
 #            db = EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE)
@@ -217,7 +233,12 @@ def _gen_docs(count=1):
             "field 0": _gen_text(),
             "field 1": _gen_text(),
             "field 2": _gen_text(),
-            "number": 10
+            "number": 10,
+            "nested": {
+                "n0": _gen_text(),
+                "n1": _gen_text(),
+                "n2": 10
+            }
         }
 
         docs.append(doc)
