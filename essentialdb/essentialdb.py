@@ -51,7 +51,7 @@ class EssentialDB:
         Returns:
             The unique identifier for the inserted document
 
-        Example:
+        Example::
             author_db = EssentialDB(filepath="authors.db")
 
         """
@@ -96,7 +96,7 @@ class EssentialDB:
         Returns:
             The unique identifier for the inserted document
 
-        Example:
+        Example::
 
             with EssentialDB(filepath="authors.db") as author_db:
                 #documents are just dictionaries
@@ -138,7 +138,7 @@ class EssentialDB:
         Returns:
             The unique identifier for the inserted document
 
-        Example:
+        Example::
             with EssentialDB(filepath="cache.db") as request_cache:
                 request_cache.set( request.url, response.text )
         """
@@ -159,7 +159,7 @@ class EssentialDB:
         Returns:
             The document (dict) if found.
 
-        Example:
+        Example::
             with EssentialDB(filepath="cache.db") as request_cache:
                 response.text = request_cache.get( request.url )
 
@@ -176,7 +176,7 @@ class EssentialDB:
         Returns
             The number of documents inserted into the store.
 
-        Example:
+        Example::
 
             with EssentialDB(filepath="authors.db") as author_db:
                 authors = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
@@ -200,7 +200,7 @@ class EssentialDB:
         Returns
             A single matching document or None if no documents match query or the collection is empty.
 
-        Example:
+        Example::
 
             with EssentialDB(filepath="authors.db") as author_db:
                 document = author_db.find_one({'first': 'Ezra', 'last': 'Pound'})
@@ -219,7 +219,7 @@ class EssentialDB:
         Returns:
             A list of matching documents or None if no documents match query or the collection is empty.
 
-        Example:
+        Example::
 
             with EssentialDB(filepath="authors.db") as author_db:
                 document = author_db.find({'last': 'Smith'})
@@ -239,7 +239,7 @@ class EssentialDB:
         Returns:
             The number of documents updated.
 
-        Example:
+        Example::
             with EssentialDB(filepath="authors.db") as author_db:
                 updated = uathor_db.update({'year': {'$gt': 1900}}, {'period': 'Modern'})
 
@@ -264,7 +264,7 @@ class EssentialDB:
         Returns:
             The number of documents removed.
 
-        Example:
+        Example::
             with EssentialDB(filepath="authors.db") as author_db:
                 document = author_db.remove({'period': 'Modern'})
         """
