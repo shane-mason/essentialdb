@@ -71,6 +71,13 @@ Remove Items::
 
   removed = author_db.remove({'period':'Modern'))
 
+Nested Queries::
+
+    customer_db.insert_one({'first': 'John', 'last': 'Smith', 'address': { 'street': '10 Maple St', 'city': 'Missoula', 'state': 'MT'}})
+    results = customer_db.find({'address.state':'MT'})
+
+Note that nested query support means that key names can not include a period.
+
 Write updates to disk::
 
   author_db.sync()
