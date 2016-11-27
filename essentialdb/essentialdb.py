@@ -52,6 +52,7 @@ class EssentialDB:
             The unique identifier for the inserted document
 
         Example::
+
             author_db = EssentialDB(filepath="authors.db")
 
         """
@@ -139,6 +140,7 @@ class EssentialDB:
             The unique identifier for the inserted document
 
         Example::
+
             with EssentialDB(filepath="cache.db") as request_cache:
                 request_cache.set( request.url, response.text )
         """
@@ -160,6 +162,7 @@ class EssentialDB:
             The document (dict) if found.
 
         Example::
+
             with EssentialDB(filepath="cache.db") as request_cache:
                 response.text = request_cache.get( request.url )
 
@@ -240,6 +243,7 @@ class EssentialDB:
             The number of documents updated.
 
         Example::
+
             with EssentialDB(filepath="authors.db") as author_db:
                 updated = uathor_db.update({'year': {'$gt': 1900}}, {'period': 'Modern'})
 
@@ -265,6 +269,7 @@ class EssentialDB:
             The number of documents removed.
 
         Example::
+
             with EssentialDB(filepath="authors.db") as author_db:
                 document = author_db.remove({'period': 'Modern'})
         """

@@ -34,12 +34,16 @@ Install with pip::
 Basic usage is straightforward::
 
     from essentialdb import EssentialDB
+
     #create or open the database
     author_db = EssentialDB(filepath="authors.db")
+
     #insert a document into the database
     author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
+
     #find some entries
     results = author_db.find({"last':'Hughes'})
+
     #commit the changes to disk
     author_db.sync()
 
@@ -97,7 +101,6 @@ Queries
 Queries in EssentialDB follow the same basic form as MongoDB::
 
     { <field1>: { <operator1>: <value1> }, ... }
-
 
 
 Comparison Query Selectors
