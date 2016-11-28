@@ -127,6 +127,16 @@ class TestEssentialDB(unittest.TestCase):
         results = self.collection.find_one({'fields 0': self.docs[5]["field 0"]})
         self.assertEqual(results, None)
 
+    def test_remove_many(self):
+        self.docs[6]["number"] = 1
+        self.docs[7]["number"] = 1
+        self.collection.insert_many(self.docs)
+        q = {"number": {"$ne": 1}}
+        count = self.collection.remove(q)
+        self.assertEqual(count, 8)
+
+
+
     def test_remove_all(self):
         self.collection.insert_many(self.docs)
         self.collection.remove()

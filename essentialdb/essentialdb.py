@@ -14,6 +14,7 @@ import uuid
 
 class EssentialDB:
     """
+
     EssentialDB class is the front end interface to the EssentialDB database::
 
         from essentialdb import EssentialDB
@@ -245,7 +246,7 @@ class EssentialDB:
         Example::
 
             with EssentialDB(filepath="authors.db") as author_db:
-                updated = uathor_db.update({'year': {'$gt': 1900}}, {'period': 'Modern'})
+                updated = author_db.update({'year': {'$gt': 1900}}, {'period': 'Modern'})
 
         """
         results = self.collection.update(query, update)

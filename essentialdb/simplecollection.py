@@ -156,7 +156,7 @@ class SimpleCollection:
             to_delete = self._query(query)
             count = len(to_delete)
             for item in to_delete:
-                del self.documents[item]
+                del self.documents[item['_id']]
         return count
 
     def set(self, key, value):
