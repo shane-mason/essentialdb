@@ -42,7 +42,7 @@ Basic usage is straightforward::
     author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
 
     #find some entries
-    results = author_db.find({"last':'Hughes'})
+    results = author_db.find({'last':'Hughes'})
 
     #commit the changes to disk
     author_db.sync()
