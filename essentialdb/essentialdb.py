@@ -278,6 +278,14 @@ class EssentialDB:
         self._cleanup()
         return results
 
+    def createIndex(self, index, options=None):
+        """
+        Create an index.
+        """
+        results = self.collection.createIndex(index, options)
+        self._cleanup()
+        return results
+
     def sync(self):
         """
         Send a hint to the database that it should consider writing to disk soon.

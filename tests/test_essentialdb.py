@@ -209,19 +209,17 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(q)
         self.assertEqual(len(response), len(self.docs)-2)
 
-
-
+    def test_create_index(self):
+        self.collection.createIndex({"field 1": 1})
+        q = {"field 1": {"$eq": self.docs[5]["field 1"]}}
+        response = self.collection.find(q)
+        #self.assertEqual(len(response), 1)
 
     def test_sync_load(self):
         with EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE) as db:
-#            db = EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE)
             docs = _gen_docs(10)
             db.insert_many(docs)
 
-        #db.sync()
-        #del db
-
-        #db2 = EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE)
         with EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE) as db2:
             find = db2.find_one({"_id": docs[5]["_id"]})
             self.assertEqual(find["_id"], docs[5]["_id"])

@@ -179,6 +179,10 @@ class SimpleCollection:
             }
             pickle.dump(output, fp)
 
+    def createIndex(self, index_document, options=None):
+        for key in index_document:
+            pass
+
     def _load(self, filepath):
         # TODO: Test if file exists
         try:
