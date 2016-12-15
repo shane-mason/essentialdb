@@ -37,6 +37,8 @@ setup(
     # Choose your license
     license='MIT',
 
+    test_suite = 'tests',
+
     # See https://pypi.python.org/pypi?%3Aaction=list_classifiers
     classifiers=[
         # How mature is this project? Common values are

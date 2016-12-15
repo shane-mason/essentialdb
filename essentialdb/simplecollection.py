@@ -16,15 +16,9 @@ class SimpleCollection:
     def __init__(self):
         self.documents = SimpleDocument()
 
-    def setup(self, filepath="bb.out"):
-        self.filepath = filepath
-
     def insert_one(self, document):
         self.documents[document["_id"]] = SimpleDocument(document)
         return document["_id"]
-
-    def insert_many(self, documents):
-        pass
 
     def find_one(self, query=None, filter=None):
         if query is None and filter is None:

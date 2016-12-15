@@ -43,7 +43,7 @@ class EssentialDB:
 
     """
 
-    def __init__(self, filepath=None, collection=None):
+    def __init__(self, filepath=None, collection=None, autosync=False):
         """
 
         Kwargs:
@@ -66,7 +66,7 @@ class EssentialDB:
         if self.filepath is not None:
             self.collection._load(filepath)
 
-        self.autosync = False
+        self.autosync = autosync
 
     def __del__(self):
         # TODO: Test if dirty before forcing sync
@@ -79,7 +79,7 @@ class EssentialDB:
     def __exit__(self, type, value, traceback):
         self.sync()
 
-    def insert_one(self, document, _id=None):
+    def insert_one(self, document):
         """
         Inserts one document into the collection. If the document already
         contains an _id, or one is specified in the key word arguments, it will
@@ -90,11 +90,6 @@ class EssentialDB:
 
         Args:
             document (dict) The document to insert.
-
-        Kwargs:
-            _id (str): If specified, _id will be used as for the primary document
-            identifier. If a document with the same identifier exists, this
-            operation will overwrite the existing document.
 
         Returns:
             The unique identifier for the inserted document
@@ -107,9 +102,7 @@ class EssentialDB:
                 author_db.insert_one(author)
 
         """
-        if _id is not None:
-            document["_id"] = _id
-        elif "_ic" not in document:
+        if "_id" not in document:
             document["_id"] = str(uuid.uuid4())
 
         results = self.collection.insert_one(document)
@@ -295,8 +288,3 @@ class EssentialDB:
         """
         return self.collection.sync(self.filepath)
 
-    def branch(self):
-        """
-        NOT IMPLEMENTED!!! CREATE A BRANCH...
-        """
-        raise NotImplementedError("Not implemented yet...")

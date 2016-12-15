@@ -2,6 +2,7 @@ __author__ = 'scmason'
 from essentialdb import Keys
 
 
+
 class LogicalOperator:
     def __init__(self, type, expressions):
         self.type = type
@@ -27,7 +28,12 @@ class LogicalOperator:
                 else:
                     match = True
         elif self.type == Keys._not:
-            raise NotImplementedError("We have not implemented NOT yet...")
+            for expression in self.expressions:
+                match = expression.test_document(document)
+                if match is False:
+                    break
+            match = not match
+
         return match
 
 
@@ -47,8 +53,10 @@ class ComparisonOperator:
         self.match_value = expression[comparator]
 
     def test_document(self, document):
-        return self.comparator_function(document[self.field], self.match_value)
-
+        try:
+            return self.comparator_function(document[self.field], self.match_value)
+        except:
+            return False
 
 class EqualityOperator:
     def __init__(self, field, value):

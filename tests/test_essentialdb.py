@@ -23,6 +23,10 @@ class TestEssentialDB(unittest.TestCase):
         self.assertEqual(num, 1)
         self.assertEqual(text, "Hello")
 
+        #now, try get before set
+        not_set = self.collection.get("doesn't exist")
+        self.assertIsNone(not_set)
+
     def test_insert_and_find_one(self):
         self.collection.insert_one(self.docs[0])
         response = self.collection.find_one()
@@ -112,6 +116,23 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(q)
         self.assertEqual(len(response), 1)
 
+    def test_find_not(self):
+        self.docs[0]["field 0"] = "Hello"
+        self.docs[0]["field 1"] = "Goodbye"
+
+        self.collection.insert_many(self.docs)
+        q = {"$not": [{'field 0': "Hello"}]}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 9)
+
+        q = {"$not": [{'field 0': "Hello", "field 1": "Goodbye"}]}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 9)
+
+        q = {"$not": [{'field 0': "Hello", "field 1": "Doesnt Exist"}]}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 10)
+
 
     def test_update_one(self):
         self.collection.insert_many(self.docs)
@@ -132,8 +153,6 @@ class TestEssentialDB(unittest.TestCase):
         q = {"number": {"$ne": 1}}
         count = self.collection.remove(q)
         self.assertEqual(count, 8)
-
-
 
     def test_remove_all(self):
         self.collection.insert_many(self.docs)
@@ -198,7 +217,6 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(q)
         self.assertEqual(len(response), len(self.docs)-2)
 
-
     def test_nin(self):
         self.docs[6]["number"] = 6
         self.docs[7]["number"] = 7
@@ -207,20 +225,50 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(q)
         self.assertEqual(len(response), len(self.docs)-2)
 
-    def xtest_create_index(self):
+    def test_create_index(self):
         self.collection.createIndex({"field 1": 1})
         q = {"field 1": {"$eq": self.docs[5]["field 1"]}}
         response = self.collection.find(q)
         #self.assertEqual(len(response), 1)
 
+    def test_missing_fields(self):
+        self.docs[6]["new field"] = 1
+        self.docs[7]["new field"] = 1
+        self.collection.insert_many(self.docs)
+        q = {"new field": {"$eq": 1}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 2)
+        q = {"new field": 1}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 2)
+
+    def test_bad_id(self):
+        self.collection.insert_many(self.docs)
+        q = {"_id": "doesn't exist"}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 0)
+
     def test_sync_load(self):
-        with EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE) as db:
+        with EssentialDB( filepath=SYNC_DB_FILE) as db:
             docs = _gen_docs(10)
             db.insert_many(docs)
 
-        with EssentialDB(collection=SimpleCollection(), filepath=SYNC_DB_FILE) as db2:
+        with EssentialDB( filepath=SYNC_DB_FILE) as db2:
             find = db2.find_one({"_id": docs[5]["_id"]})
             self.assertEqual(find["_id"], docs[5]["_id"])
+
+
+
+    def test_auto_sync(self):
+        # test documents with ids already in place
+        db = EssentialDB( filepath=SYNC_DB_FILE, autosync=True )
+        docs = _gen_docs(10)
+        db.insert_many(docs)
+        del(db)
+
+        db2 = EssentialDB( filepath=SYNC_DB_FILE)
+        find = db2.find_one({"_id": docs[5]["_id"]})
+        self.assertEqual(find["_id"], docs[5]["_id"])
 
     @classmethod
     def tearDownClass(cls):
