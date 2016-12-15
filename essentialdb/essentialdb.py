@@ -7,7 +7,7 @@
 
 """
 
-from essentialdb import SimpleCollection, Keys
+from essentialdb import SimpleCollection
 
 import uuid
 
@@ -42,6 +42,7 @@ class EssentialDB:
             author_db.insert_many()
 
     """
+
     def __init__(self, filepath=None, collection=None):
         """
 
@@ -61,15 +62,15 @@ class EssentialDB:
             collection = SimpleCollection()
         self.collection = collection
 
-        self.filepath=filepath
+        self.filepath = filepath
         if self.filepath is not None:
             self.collection._load(filepath)
 
         self.autosync = False
 
     def __del__(self):
-        #TODO: Test if dirty before forcing sync
-        #self.sync()
+        # TODO: Test if dirty before forcing sync
+        # self.sync()
         pass
 
     def __enter__(self):
@@ -107,9 +108,9 @@ class EssentialDB:
 
         """
         if _id is not None:
-            document[Keys.id] = _id
-        elif Keys.id not in document:
-            document[Keys.id] = str(uuid.uuid4())
+            document["_id"] = _id
+        elif "_ic" not in document:
+            document["_id"] = str(uuid.uuid4())
 
         results = self.collection.insert_one(document)
         self._cleanup()

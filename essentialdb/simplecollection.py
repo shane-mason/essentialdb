@@ -1,10 +1,9 @@
 __author__ = 'scmason'
-
 import datetime
 import random
 import pickle
-from essentialdb import Keys
-from essentialdb import SimpleDocument
+from essentialdb import SimpleDocument, QueryFilter
+from essentialdb import QueryFilter
 
 
 class SimpleCollection:
@@ -13,7 +12,6 @@ class SimpleCollection:
     persistence and all the logic required to query the store. This class can be
     extended to add or alter database functionality.
     """
-
 
     def __init__(self):
         self.documents = SimpleDocument()
@@ -37,101 +35,11 @@ class SimpleCollection:
 
             if len(results) > 0:
                 return results[0]
-        return None
+        return []
 
-    def _query(self, query, filter=None, limit=None):
-        """
-
-        """
-
-        def dot_get(d, keys):
-            if "." in keys:
-                key, rest = keys.split(".", 1)
-                return dot_get(d[key], rest)
-            else:
-                return d[keys]
-
-
-        def _test_comparison(field, query, doc):
-
-            try:
-                # then is is something like  { "$eq": 12 }
-                operator = list(query.keys())[0]
-                compareto = query[operator]
-                return Keys.comparisons[operator](doc[field], compareto)
-            except:
-                return False
-
-
-        def _test_or(query_list, doc):
-            for q in query_list:
-                for field in q:
-                    if isinstance(q[field], dict) and   _test_comparison(field, q[field], doc):
-                        return True
-                    elif field in doc and q[field] == doc[field]:
-                        return True
-            return False
-
-        def _test_nor(query_list, doc):
-            for q in query_list:
-                for field in q:
-                    if isinstance(q[field], dict) and  _test_comparison(field, q[field], doc):
-                        return False
-                    elif field in doc and q[field] == doc[field]:
-                        return False
-            return True
-
-        def _test_and(query_list, doc):
-            for q in query_list:
-                for field in q:
-                    if isinstance(q[field], dict):
-                        if not _test_comparison(field, q[field], doc):
-                            return False
-                    elif field not in doc or q[field] != doc[field]:
-                        return False
-            return True
-
-
-        results = []
-        # first, is it by id?
-        if Keys.id in query:
-            if query[Keys.id] in self.documents:
-                matches = True
-                if filter:
-                    matches = filter(self.documents[query[Keys.id]])
-                if matches:
-                    results.append(self.documents[query[Keys.id]])
-        else:
-            for _id in self.documents:
-                matches = True
-                for key in query:
-                    if key == Keys._or:
-                        matches = _test_or(query[key], self.documents[_id])
-                    elif key == Keys._nor:
-                        matches = _test_nor(query[key], self.documents[_id])
-                    elif key == Keys._and:
-                        matches = _test_and(query[key], self.documents[_id])
-                    elif isinstance(query[key], dict):
-                        #something like {"field': {'$eq': 'something'}}
-                        matches = _test_comparison(key, query[key], self.documents[_id])
-                    elif isinstance(key, str) and "." in key:
-                        if query[key] != self.documents[_id][key]:
-                            matches = False
-                        else:
-                            matches = True
-                    elif key not in self.documents[_id] or query[key] != self.documents[_id][key]:
-                        matches = False
-
-                    if not matches:
-                        break
-
-                if matches:
-                    if filter:
-                        matches = filter(self.documents[_id])
-                    if matches:
-                        results.append(self.documents[_id])
-
-
+    def _query(self, query, filter_function=None, limit=None):
+        query_filter = QueryFilter(query)
+        results = query_filter.execute_filter(self.documents, filter_function)
         return results
 
     def find(self, query=None, filter=None):
@@ -191,4 +99,3 @@ class SimpleCollection:
                 self.documents = db["documents"]
         except:
             self.documents = {}
-
