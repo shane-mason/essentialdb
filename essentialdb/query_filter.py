@@ -2,8 +2,18 @@ __author__ = 'scmason'
 from essentialdb import Keys
 
 
-
 class LogicalOperator:
+    """
+    Logical)perator rmodels a list of expressions that are bnound by logical operator - inclusing::
+
+        { $and: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
+        { $or: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
+        { $nor: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
+        { $not: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
+
+    The expressiona are stores as an ordered array, each are executed on calls to 'test_document'.
+    """
+
     def __init__(self, type, expressions):
         self.type = type
         self.expressions = expressions
@@ -38,6 +48,19 @@ class LogicalOperator:
 
 
 class ComparisonOperator:
+    """
+    ComparisonOperator represents expressions with comparison operators of the form::
+
+        { field: { operator: value } }
+
+    For example:
+
+        { 'first_name' : { '$eq' : 'john' } }
+        { 'year' : { '$gt' : 1900 } }
+
+    And so on.
+    """
+
     def __init__(self, field, expression):
         self.field = None
         self.comparator_function = None
@@ -58,7 +81,21 @@ class ComparisonOperator:
         except:
             return False
 
+
 class EqualityOperator:
+    """
+    EqualityOperator checks for basic eqaulity, in expressions of the form::
+
+            {field : value}
+
+    For example:
+
+            {'first_name' : 'John'}
+            {'subscriber' : True}
+
+    And so on.
+    """
+
     def __init__(self, field, value):
         self.field = field
         self.value = value
@@ -71,12 +108,21 @@ class EqualityOperator:
 
 
 class QueryFilter:
+    """
+    Models a 'compiled' query document. The raw query doscument is sent in and 'parsed' or compiled into a list of
+    expressions. Later, the filter can be executed across a set of documents.
+    """
+
     def __init__(self, query_document):
         self.expressions = self.__parse_query(query_document, [])
 
     def execute_filter(self, documents, filter_function=None):
+        """
+        Execute the filter across a ser of provided documents.
+        """
         # first, look for the most simple case, which is an id lookup
-        if len(self.expressions) == 1 and isinstance(self.expressions[0],EqualityOperator) and self.expressions[0].field == Keys.id:
+        if len(self.expressions) == 1 and isinstance(self.expressions[0], EqualityOperator) and self.expressions[
+            0].field == Keys.id:
             id = self.expressions[0].value
             if id in documents:
                 return [documents[id]]
@@ -101,11 +147,6 @@ class QueryFilter:
     def __parse_query(self, query_document, expression_list):
         expressions = expression_list
         for key in query_document:
-
-            # { $and: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
-            # { $or: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
-            # { $nor: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
-            # { $not: [ { <expression1> }, { <expression2> } , ... , { <expressionN> } ] }
             if key in [Keys._and, Keys._or, Keys._nor, Keys._not]:
                 log_expressions = []
                 for item in query_document[key]:
