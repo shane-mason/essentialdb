@@ -67,6 +67,8 @@ class EssentialDB:
             self.collection._load(filepath)
 
         self.autosync = autosync
+        self.dirty = False
+
 
     def __del__(self):
         # TODO: Test if dirty before forcing sync
@@ -77,7 +79,8 @@ class EssentialDB:
         return self
 
     def __exit__(self, type, value, traceback):
-        self.sync()
+        if self.dirty:
+            self.sync()
 
     def insert_one(self, document):
         """
@@ -114,9 +117,10 @@ class EssentialDB:
         Internal function, used to finalize any outstanding tasks after inserts
         and other operations that alter the state of the database.
         """
+        self.dirty = True
         if self.autosync:
             self.sync()
-        pass
+
 
     def set(self, key, value):
         """
@@ -286,5 +290,7 @@ class EssentialDB:
 
         Currently, this blocks and writes to disk immediately.
         """
+
+        self.dirty = False
         return self.collection.sync(self.filepath)
 

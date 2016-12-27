@@ -144,7 +144,7 @@ class TestEssentialDB(unittest.TestCase):
         self.collection.insert_many(self.docs)
         self.collection.remove({'fields 0': self.docs[5]["field 0"]})
         results = self.collection.find_one({'fields 0': self.docs[5]["field 0"]})
-        self.assertEqual(results, [])
+        self.assertEqual(results, None)
 
     def test_remove_many(self):
         self.docs[6]["number"] = 1
@@ -249,8 +249,9 @@ class TestEssentialDB(unittest.TestCase):
         self.assertEqual(len(response), 0)
 
     def test_sync_load(self):
+        docs = _gen_docs(10)
+
         with EssentialDB( filepath=SYNC_DB_FILE) as db:
-            docs = _gen_docs(10)
             db.insert_many(docs)
 
         with EssentialDB( filepath=SYNC_DB_FILE) as db2:
@@ -274,7 +275,7 @@ class TestEssentialDB(unittest.TestCase):
     def tearDownClass(cls):
         import os
         os.remove(SYNC_DB_FILE)
-
+        pass
 
 def _gen_docs(count=1):
     docs = []

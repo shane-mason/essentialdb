@@ -2,7 +2,10 @@
 class EssentialIndex:
     """HashIndex provides fast lookup indexing for dictionary"""
 
-    def __init__(self):
+    def __init__(self, field_key, index_type, index_name=None):
+        self.field_key = field_key
+        self.index_type = index_type
+        self.index_name = index_name if index_name != None else index_type + field_key
         self.index = {}
 
 

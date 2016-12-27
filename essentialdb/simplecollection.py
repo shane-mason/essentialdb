@@ -29,7 +29,7 @@ class SimpleCollection:
 
             if len(results) > 0:
                 return results[0]
-        return []
+        return None
 
     def _query(self, query, filter_function=None, limit=None):
         query_filter = QueryFilter(query)
