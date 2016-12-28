@@ -17,6 +17,7 @@ class LogicalOperator:
     def __init__(self, type, expressions):
         self.type = type
         self.expressions = expressions
+        self.field = None
 
     def test_document(self, document):
         match = True
@@ -66,14 +67,15 @@ class ComparisonOperator:
         self.comparator_function = None
         self.match_value = None
         self.parse_expression(field, expression)
+        self.comparator = None
 
     def parse_expression(self, field, expression):
         self.field = field
         # expression is something like {'$eq': 'something'}
         # get the comparator function
-        comparator = list(expression.keys())[0]
-        self.comparator_function = Keys.comparisons[comparator]
-        self.match_value = expression[comparator]
+        self.comparator = list(expression.keys())[0]
+        self.comparator_function = Keys.comparisons[self.comparator]
+        self.match_value = expression[self.comparator]
 
     def test_document(self, document):
         try:
@@ -116,7 +118,7 @@ class QueryFilter:
     def __init__(self, query_document):
         self.expressions = self.__parse_query(query_document, [])
 
-    def execute_filter(self, documents, filter_function=None):
+    def execute_filter(self, documents, filter_function=None, indexes={}):
         """
         Execute the filter across a ser of provided documents.
         """
@@ -130,6 +132,14 @@ class QueryFilter:
                 return []
 
         results = []
+
+        #do we only have one expression, and if so, so we have an index on it?
+        if len(self.expressions) == 1 and  self.expressions[0].field in indexes:
+            # if is ir equlity, then lets find just the matches
+            if isinstance(self.expressions[0], EqualityOperator) or (isinstance(self.expressions[0], ComparisonOperator)
+                                                                     and self.expressions[0].comparator == '$eq'):
+                documents = indexes[self.expressions[0].field].find(documents, self.expressions[0].match_value)
+
         for key in documents:
             matches = True
             for expression in self.expressions:
@@ -158,7 +168,6 @@ class QueryFilter:
                 expressions.append(ComparisonOperator(key, query_document[key]))
             # then we are left with {"field 1", "value 1"}
             else:
-
                 expressions.append(EqualityOperator(key, query_document[key]))
 
         return expressions

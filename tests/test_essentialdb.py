@@ -2,6 +2,7 @@ from essentialdb import EssentialDB, SimpleCollection
 import random
 import string
 import unittest
+from .document_generator import DocumentGenerator
 
 __author__ = 'scmason'
 
@@ -11,7 +12,27 @@ class TestEssentialDB(unittest.TestCase):
 
     def setUp(self):
         self.collection = EssentialDB()
-        self.docs = _gen_docs(10)
+        #self.docs = _gen_docs(10)
+        generator = DocumentGenerator()
+        def make_nested():
+            nested_gen = DocumentGenerator()
+            nested_gen.set_template({
+                "n0": 'word',
+                "n1": 'word',
+                "n2": 10
+            })
+            return nested_gen.gen_doc()
+
+        template = {
+            "field 0": 'word',
+            "field 1": 'word',
+            "field 2": 'word',
+            "number": 10,
+            "nested": make_nested
+        }
+
+        generator.set_template(template)
+        self.docs = generator.gen_docs(10)
 
     def test_set_get(self):
         self.collection.set("my-test-number", 1)
@@ -249,7 +270,7 @@ class TestEssentialDB(unittest.TestCase):
         self.assertEqual(len(response), 0)
 
     def test_sync_load(self):
-        docs = _gen_docs(10)
+        docs = self.docs
 
         with EssentialDB( filepath=SYNC_DB_FILE) as db:
             db.insert_many(docs)
@@ -263,7 +284,7 @@ class TestEssentialDB(unittest.TestCase):
     def test_auto_sync(self):
         # test documents with ids already in place
         db = EssentialDB( filepath=SYNC_DB_FILE, autosync=True )
-        docs = _gen_docs(10)
+        docs = self.docs
         db.insert_many(docs)
         del(db)
 
@@ -276,28 +297,6 @@ class TestEssentialDB(unittest.TestCase):
         import os
         os.remove(SYNC_DB_FILE)
         pass
-
-def _gen_docs(count=1):
-    docs = []
-
-    def _gen_text():
-        return ''.join(random.choice(string.ascii_letters) for k in range(random.randint(3, 8)))
-
-    for i in range(count):
-        doc = {
-            "field 0": _gen_text(),
-            "field 1": _gen_text(),
-            "field 2": _gen_text(),
-            "number": 10,
-            "nested": {
-                "n0": _gen_text(),
-                "n1": _gen_text(),
-                "n2": 10
-            }
-        }
-
-        docs.append(doc)
-    return docs
 
 
 if __name__ == '__main__':
