@@ -66,8 +66,9 @@ class ComparisonOperator:
         self.field = None
         self.comparator_function = None
         self.match_value = None
-        self.parse_expression(field, expression)
         self.comparator = None
+        self.parse_expression(field, expression)
+
 
     def parse_expression(self, field, expression):
         self.field = field
@@ -100,11 +101,11 @@ class EqualityOperator:
 
     def __init__(self, field, value):
         self.field = field
-        self.value = value
+        self.match_value = value
 
     def test_document(self, document):
         try:
-            return self.value == document[self.field]
+            return self.match_value == document[self.field]
         except:
             return False
 
@@ -125,7 +126,7 @@ class QueryFilter:
         # first, look for the most simple case, which is an id lookup
         if len(self.expressions) == 1 and isinstance(self.expressions[0], EqualityOperator) and self.expressions[
             0].field == Keys.id:
-            id = self.expressions[0].value
+            id = self.expressions[0].match_value
             if id in documents:
                 return [documents[id]]
             else:

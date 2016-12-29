@@ -284,9 +284,9 @@ class EssentialDB:
         self._cleanup()
         return results
 
-    def dropIndexes(self, index, options=None):
+    def dropIndexes(self):
         """
-        Create an index.
+        Drop  all indexes.
         """
         results = self.collection.dropIndexes()
         self._cleanup()

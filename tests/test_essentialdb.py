@@ -246,7 +246,16 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(q)
         self.assertEqual(len(response), 1)
 
-
+    def test_drop_indexes(self):
+        self.collection.insert_many(self.docs)
+        self.collection.createIndex({"field 1": "hashed"})
+        q = {"field 1": {"$eq": self.docs[5]["field 1"]}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+        self.collection.dropIndexes()
+        q = {"field 1": {"$eq": self.docs[6]["field 1"]}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
 
     def test_missing_fields(self):
         self.docs[6]["new field"] = 1
@@ -276,7 +285,6 @@ class TestEssentialDB(unittest.TestCase):
             self.assertEqual(find["_id"], docs[5]["_id"])
 
 
-
     def test_auto_sync(self):
         # test documents with ids already in place
         db = EssentialDB( filepath=SYNC_DB_FILE, autosync=True )
@@ -291,8 +299,10 @@ class TestEssentialDB(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         import os
-        os.remove(SYNC_DB_FILE)
-        pass
+        try:
+            os.remove(SYNC_DB_FILE)
+        except:
+            pass
 
 
 if __name__ == '__main__':

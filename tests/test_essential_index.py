@@ -43,16 +43,21 @@ class TestEssentialIndex(unittest.TestCase):
 
 class TestEssentialIndexSpeed(unittest.TestCase):
 
-    def setUp(self):
-        self.collection = EssentialDB("delme.db")
-        self.docs = []
+    def XXsetUp(self):
+
         generator = DocumentGenerator()
+
+        self.collection = EssentialDB("indextest.db")
+        self.docs = []
 
         self.users = []
 
         for i in range(1000):
             self.users.append(generator.gen_email())
 
+
+        #print(self.users)
+        #'frerthhehme@reutme.co.uk', 'tinlor@ndve.org', 'gomst.iinrwa@parawmea.net', 'elaesote@hmoheohe.com', 'alhe@niciat.tv', 'mtihitk@heeatneomdcnrero.org', 'haitnemavo@ofonwe.eanecech.jp', 'pldonlelued@chedoren.fr', 'isma@wue995.com'
         template = {
             '_id': 'index',
             "gid": 'gid',
@@ -68,5 +73,24 @@ class TestEssentialIndexSpeed(unittest.TestCase):
         self.collection.insert_many(self.docs)
         self.collection.sync()
 
-    def test_find_multiple(self):
-        pass
+    @classmethod
+    def setUpClass(cls):
+        cls.collection = EssentialDB("indextest.db")
+        cls.collection.createIndex({'severity': 'hashed'})
+        cls.collection.createIndex({'user': 'hashed'})
+
+    def test_find_many(self):
+        q = {'severity': 'major'}
+        results = self.collection.find(q)
+        print(len(results))
+
+    def test_find_several(self):
+        q = {'user': 'tinlor@ndve.org'}
+        results = self.collection.find(q)
+        print(results[5])
+        print(len(results))
+
+    def test_find_one(self):
+        q = {'_id': 25000}
+        results = self.collection.find(q)
+        print(len(results))
