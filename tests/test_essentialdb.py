@@ -238,19 +238,15 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(q)
         self.assertEqual(len(response), len(self.docs)-2)
 
-    def test_nin(self):
-        self.docs[6]["number"] = 6
-        self.docs[7]["number"] = 7
-        self.collection.insert_many(self.docs)
-        q = {"number": {"$nin": [6, 7]}}
-        response = self.collection.find(q)
-        self.assertEqual(len(response), len(self.docs)-2)
 
     def test_create_index(self):
-        self.collection.createIndex({"field 1": 1})
+        self.collection.insert_many(self.docs)
+        self.collection.createIndex({"field 1": "hashed"})
         q = {"field 1": {"$eq": self.docs[5]["field 1"]}}
         response = self.collection.find(q)
-        #self.assertEqual(len(response), 1)
+        self.assertEqual(len(response), 1)
+
+
 
     def test_missing_fields(self):
         self.docs[6]["new field"] = 1

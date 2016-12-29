@@ -2,8 +2,9 @@ __author__ = 'scmason'
 import datetime
 import random
 import pickle
-from essentialdb import SimpleDocument, QueryFilter
+from essentialdb import SimpleDocument
 from essentialdb import QueryFilter
+from essentialdb import EssentialIndex
 
 
 class SimpleCollection:
@@ -15,6 +16,7 @@ class SimpleCollection:
 
     def __init__(self):
         self.documents = SimpleDocument()
+        self.indexes = {}
 
     def insert_one(self, document):
         self.documents[document["_id"]] = SimpleDocument(document)
@@ -33,7 +35,7 @@ class SimpleCollection:
 
     def _query(self, query, filter_function=None, limit=None):
         query_filter = QueryFilter(query)
-        results = query_filter.execute_filter(self.documents, filter_function)
+        results = query_filter.execute_filter(self.documents, filter_function, self.indexes)
         return results
 
     def find(self, query=None, filter=None):
@@ -76,14 +78,20 @@ class SimpleCollection:
                 "meta": {
                     "timestamp": datetime.datetime.now()
                 },
-                "indexes": None,
+                "indexes": self.indexes,
                 "documents": self.documents
             }
             pickle.dump(output, fp)
 
     def createIndex(self, index_document, options=None):
         for key in index_document:
-            pass
+            if index_document[key] == "hashed":
+                index = EssentialIndex(key)
+                index.create_index(self.documents)
+                self.indexes[key] = index
+
+    def dropIndexes(self):
+        self.indexes.clear()
 
     def _load(self, filepath):
         # TODO: Test if file exists

@@ -1,6 +1,7 @@
 __author__ = 'scmason'
 import unittest
-from essentialdb import EssentialIndex
+from essentialdb import EssentialIndex, EssentialDB
+from .document_generator import DocumentGenerator
 
 data = {
     'a': {'f1': 'v1', 'f2': 'v2', 'f3': 100},
@@ -40,4 +41,32 @@ class TestEssentialIndex(unittest.TestCase):
         items = index.find(data, 'v444')
         self.assertEqual(len(items), 0)
 
+class TestEssentialIndexSpeed(unittest.TestCase):
 
+    def setUp(self):
+        self.collection = EssentialDB("delme.db")
+        self.docs = []
+        generator = DocumentGenerator()
+
+        self.users = []
+
+        for i in range(1000):
+            self.users.append(generator.gen_email())
+
+        template = {
+            '_id': 'index',
+            "gid": 'gid',
+            "severity": ['minor', 'major', 'critical', 'blocker'],
+            "title": 'sentence',
+            "posts": 'small_int',
+            "description": 'paragraph',
+            "user": self.users
+        }
+
+        generator.set_template(template)
+        self.docs = generator.gen_docs(50000)
+        self.collection.insert_many(self.docs)
+        self.collection.sync()
+
+    def test_find_multiple(self):
+        pass

@@ -131,10 +131,21 @@ class DocumentGenerator:
             url += "/%s" % self.gen_word()
 
         if random.random() < .50:
-            url = "%s.%s" % (url,random.choice(mimes))
+            url = "%s.%s" % (url, random.choice(mimes))
 
         return url
 
+    def small_int(self):
+        return random.randint(0, 99)
+
+    def integer(self):
+        return random.randint()
+
+    def small_float(self):
+        return random.random()
+
+    def floating(self):
+        return random.random() * random.randint()
 
     def gen_doc(self):
         doc = {}
@@ -142,9 +153,14 @@ class DocumentGenerator:
             'index': self.gen_index,
             'word': self.gen_word,
             'sentence': self.gen_sentence,
+            'paragraph': self.gen_paragraph,
             'email': self.gen_email,
             'gid': self.gen_gid,
-            'url': self.gen_url
+            'url': self.gen_url,
+            'small_int': self.small_int,
+            'integer': self.integer,
+            'small_float': self.small_float,
+            'floating': self.floating
         }
 
         for field in self.template:
