@@ -1,26 +1,74 @@
+EssentialDB
+============
 
-A Fast Embedded Database in Python.
-------------------------------------
+EssentialDB is a pure Python document database developed to meet the following tenets:
 
-Use case: You want to prototype an idea without a heavyweight database install. If the idea works out though, you don't want
-to rewrite all of your data access code.
-
-EssentialDB helps solve that problem by being (nearly) api compatible with MongoDB. That way when your idea starts to grow,
-you can switch to MongoDB to scale.
-
-* Syntax and semantics are very similar to MongoDB, lowering the barrier of entry.
-* Fairly complex query support.
-* Its in pure python.
-* Its very fast.
+1. Databases shouldn't slow down development - a developer should be able to integrate a database in less than a minute.
+2. Development databases should have a complete feature set and be performant enough for prototyping and project startups
+3. Development databases should provide a path to scale when your project takes off
 
 `Project On GitHub <https://github.com/shane-mason/essentialdb>`_ |
 `Full Docs @ ReadTheDocs <http://essentialdb.readthedocs.io/en/latest/>`_ |
 `Distribution On Pypi <https://pypi.python.org/pypi/essentialdb>`_
 
+Speeding Development
+---------------------
 
-Current Status
----------------
-Just getting started!
+Our first tenet is that you should be able to start developing in less than a minute. Since EssentialDB is an 'embedded' database, there is no external services or dependencies to install or administrate. The tenet here is to take you from concept to development in less than a minute.
+
+Installing is this simple::
+
+    pip install essentialdb
+
+
+Using is this simple::
+
+    from essentialdb import EssentialDB
+
+    #create or open the database
+    author_db = EssentialDB(filepath="authors.db")
+
+    #insert a document into the database
+    author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
+
+    #find some entries
+    results = author_db.find({'last':'Hughes'}
+
+    #commit the changes to disk
+    author_db.sync()
+
+
+Documents are just Python dictionaries and EssentialDB provides an API to easily store and retrieve them.
+
+Features & Performance
+-----------------------
+
+Our second tenet is that EssentialDB should have the performance and features you need to get your project rolling.
+
+EssentialDB supports a very rich queries that follow the same basic form as MongoDB::
+
+    { <field1>:  <operator1>: <value1> }, ... }
+
+Most comparrison operators are supported, including equals, not equals,  less than, greater than::
+
+    author_db.find({"born" : {"$gt": 1900}})
+
+
+You can even test against lists of items using $in and $nin::
+
+    author_db.find({"genre" : {"$in": ["tragedy", "drama"]}})
+
+AND and OR boolean operators allow you to make arbitrarily complex queries::
+
+    #find authors born after 1900 and before 2000
+    author_db.find({'$and':[{'born': {'$gte': 1900}},{'born': {'$lt': 2000}}]})
+
+    #find authors with either the first or last name John
+    author_db.find({'$or':[{'first': {'$eg': 'John'}},{'last': {'$eq': 'John'}}]})
+
+
+
+We've tested EssentialDB under some typical use cases, and seen that it is plenty performant for many use cases with small to moderate loads.
 
 Quickstart
 -----------
@@ -49,7 +97,7 @@ Basic usage is straightforward::
 Or using the 'with' semantics to assure that write happen without having to explicitly call sync::
 
     with EssentialDB(filepath="authors.db") as author_db:
-        author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
+        author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902})
 
 
 Insert a document::
@@ -94,69 +142,5 @@ Note that nested query support means that key names can not include a period.
 
 Write updates to disk::
 
-  author_db.sync()
-
-Queries
---------
-
-Queries in EssentialDB follow the same basic form as MongoDB::
-
-    { <field1>: { <operator1>: <value1> }, ... }
-
-
-Comparison Query Selectors
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-The $eq operator matches documents where the value of a field equals the specified value::
-
-    author_db.find({"born" : {"$eq": 1972}})
-
-The $ne operator matches documents where the value of a field is not equal to the specified value::
-
-    author_db.find({"born" : {"$ne": 1972}})
-
-The $gt operator matches documents where the value of a field is greater than the specified value::
-
-    author_db.find({"born" : {"$gt": 1900}})
-
-The $gte operator matches documents where the value of a field is great than or equal to the specified value::
-
-    author_db.find({"born" : {"$gte": 1900}})
-
-The $lt operator matches documents where the value of a field is less than the specified value::
-
-    author_db.find({"born" : {"$lt": 1900}})
-
-
-The $lte operator matches documents where the value of a field is less than or equal to the specified value::
-
-    author_db.find({"born" : {"$lte": 1900}})
-
-The $in operator matches documents where the value of a field is equal any item in the specified array::
-
-    author_db.find({"genre" : {"$in": ["tragedy", "drama"]}})
-
-The $nin operator matches documents where the value of a field is not equal to any item in the specified array::
-
-    author_db.find({"genre" : {"$nin": ["tragedy", "drama"]}})
-
-
-Boolean Operators
-^^^^^^^^^^^^^^^^^
-The $and operator matches documents where all the fields match::
-
-    #find authors born after 1900 and before 2000
-    author_db.find({'$and':[{'born': {'$gte': 1900}},{'born': {'$lt': 2000}}]})
-
-The $or operator matches documents where any of the fields match::
-
-    #find authors with either the first or last name John
-    author_db.find({'$or':[{'first': {'$eq': 'John'}},{'last': {'$eq': 'John'}}]})
-
-The $nor operator matches document where none of the conditions match::
-
-    #find all authors who have neither the first or last name John
-    author_db.find({"$nor":[{'first': {"$eq": 'John'}},{'last': {'$eq': 'John'}}]})
-
-
+    author_db.sync()
 
