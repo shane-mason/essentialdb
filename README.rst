@@ -1,5 +1,3 @@
-EssentialDB
-===========
 
 A Fast Embedded Database in Python.
 ------------------------------------
@@ -18,6 +16,7 @@ you can switch to MongoDB to scale.
 `Project On GitHub <https://github.com/shane-mason/essentialdb>`_ |
 `Full Docs @ ReadTheDocs <http://essentialdb.readthedocs.io/en/latest/>`_ |
 `Distribution On Pypi <https://pypi.python.org/pypi/essentialdb>`_
+
 
 Current Status
 ---------------
