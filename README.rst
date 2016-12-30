@@ -2,7 +2,7 @@
 A Fast Embedded Database in Python.
 ------------------------------------
 
-Use case: You want to prototype an idea wihtout a heavyweight database install. If the idea works out though, you don't want
+Use case: You want to prototype an idea without a heavyweight database install. If the idea works out though, you don't want
 to rewrite all of your data access code.
 
 EssentialDB helps solve that problem by being (nearly) api compatible with MongoDB. That way when your idea starts to grow,
@@ -79,9 +79,11 @@ Update many::
 
   updated = author_db.update({'born': {'$gt': 1900}}, {'period': 'Modern'})
 
+Note that updating fields that don't currently exist in the document will add the field to the document.
+
 Remove Items::
 
-  removed = author_db.remove({'period':'Modern'))
+  removed = author_db.remove({'period':'Modern'})
 
 Nested Queries::
 
@@ -149,11 +151,12 @@ The $and operator matches documents where all the fields match::
 The $or operator matches documents where any of the fields match::
 
     #find authors with either the first or last name John
-    author_db.find({'$or':[{'first': {'$eg': 'John'}},{'last': {'$eq': 'John'}}]})
+    author_db.find({'$or':[{'first': {'$eq': 'John'}},{'last': {'$eq': 'John'}}]})
 
 The $nor operator matches document where none of the conditions match::
 
     #find all authors who have neither the first or last name John
     author_db.find({"$nor":[{'first': {"$eq": 'John'}},{'last': {'$eq': 'John'}}]})
+
 
 
