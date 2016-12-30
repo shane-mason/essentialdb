@@ -9,6 +9,8 @@ Changelog:
 
 
 .. toctree::
+   :glob:
 
-   api
+   index
    performance
+   api
