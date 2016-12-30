@@ -13,5 +13,4 @@ Changelog:
 
    index
    api
-   performance
 
