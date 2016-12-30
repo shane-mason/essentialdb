@@ -8,5 +8,7 @@ Changelog:
 * 0.3.0 - 12.28.2016 - Added hash indexes
 
 
+.. toctree::
 
-
+   api
+   performance
