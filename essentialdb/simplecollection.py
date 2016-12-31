@@ -2,7 +2,6 @@ __author__ = 'scmason'
 import datetime
 import random
 import pickle
-from essentialdb import SimpleDocument
 from essentialdb import QueryFilter
 from essentialdb import EssentialIndex
 
@@ -15,11 +14,13 @@ class SimpleCollection:
     """
 
     def __init__(self):
-        self.documents = SimpleDocument()
+        self.documents = {} # SimpleDocument()
         self.indexes = {}
 
     def insert_one(self, document):
-        self.documents[document["_id"]] = SimpleDocument(document)
+        #self.documents[document["_id"]] = SimpleDocument(document)
+        self.documents[document["_id"]] = dict(document)
+
         for field in self.indexes:
             self.indexes[field].update_index(self.documents[document["_id"]])
 

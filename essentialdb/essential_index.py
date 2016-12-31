@@ -1,4 +1,3 @@
-from essentialdb import SimpleDocument
 
 class EssentialIndex:
     """HashIndex provides fast lookup indexing for dictionary"""
@@ -9,7 +8,7 @@ class EssentialIndex:
         self.index = {}
 
     def find(self, data, value):
-        results = SimpleDocument()
+        results = {}
         if value in self.index:
             for _id in self.index[value]:
                 results[_id] = data[_id]

@@ -1,5 +1,6 @@
 import random
 import uuid
+import sys
 
 
 class DocumentGenerator:
@@ -139,13 +140,14 @@ class DocumentGenerator:
         return random.randint(0, 99)
 
     def integer(self):
-        return random.randint()
+
+        return random.randint(0, sys.maxsize)
 
     def small_float(self):
         return random.random()
 
     def floating(self):
-        return random.random() * random.randint()
+        return random.random() * sys.maxsize
 
     def gen_doc(self):
         doc = {}

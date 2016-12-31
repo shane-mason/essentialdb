@@ -1,6 +1,4 @@
 from essentialdb import EssentialDB, SimpleCollection
-import random
-import string
 import unittest
 from .document_generator import DocumentGenerator
 
@@ -8,12 +6,12 @@ __author__ = 'scmason'
 
 SYNC_DB_FILE = "sync_test_db"
 
-class TestEssentialDB(unittest.TestCase):
 
+class TestEssentialDB(unittest.TestCase):
     def setUp(self):
         self.collection = EssentialDB()
-        #self.docs = _gen_docs(10)
         generator = DocumentGenerator()
+
         def make_nested():
             nested_gen = DocumentGenerator()
             nested_gen.set_template({
@@ -44,7 +42,7 @@ class TestEssentialDB(unittest.TestCase):
         self.assertEqual(num, 1)
         self.assertEqual(text, "Hello")
 
-        #now, try get before set
+        # now, try get before set
         not_set = self.collection.get("doesn't exist")
         self.assertIsNone(not_set)
 
@@ -70,7 +68,8 @@ class TestEssentialDB(unittest.TestCase):
 
     def test_find_one_complex_dot_query(self):
         self.collection.insert_many(self.docs)
-        response = self.collection.find_one({"nested.n0": self.docs[5]["nested"]["n0"], "nested.n1": self.docs[5]["nested"]["n1"]})
+        response = self.collection.find_one(
+            {"nested.n0": self.docs[5]["nested"]["n0"], "nested.n1": self.docs[5]["nested"]["n1"]})
         self.assertEqual(response["_id"], self.docs[5]["_id"])
 
     def test_find_one_filter(self):
@@ -84,13 +83,11 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(filter=filter)
         self.assertEqual(response[0]["_id"], self.docs[5]["_id"])
 
-
     def test_find_or(self):
         self.collection.insert_many(self.docs)
         q = {"$or": [{"field 0": self.docs[5]["field 0"]}, {"field 1": self.docs[6]["field 1"]}]}
         response = self.collection.find(q)
         self.assertEqual(len(response), 2)
-
 
     def test_find_nor(self):
         self.collection.insert_many(self.docs)
@@ -154,10 +151,10 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(q)
         self.assertEqual(len(response), 10)
 
-
     def test_update_one(self):
         self.collection.insert_many(self.docs)
-        self.collection.update({"field 0": self.docs[5]["field 0"], "field 1": self.docs[5]["field 1"]}, {"field 2": "Hello"})
+        self.collection.update({"field 0": self.docs[5]["field 0"], "field 1": self.docs[5]["field 1"]},
+                               {"field 2": "Hello"})
         find = self.collection.find_one({"field 2": "Hello"})
         self.assertEqual(find["_id"], self.docs[5]["_id"])
 
@@ -236,8 +233,7 @@ class TestEssentialDB(unittest.TestCase):
         self.collection.insert_many(self.docs)
         q = {"number": {"$nin": [6, 7]}}
         response = self.collection.find(q)
-        self.assertEqual(len(response), len(self.docs)-2)
-
+        self.assertEqual(len(response), len(self.docs) - 2)
 
     def test_create_index(self):
         self.collection.insert_many(self.docs)
@@ -266,7 +262,6 @@ class TestEssentialDB(unittest.TestCase):
         self.collection.remove({"field 1": self.docs[5]["field 1"]})
         response = self.collection.find(q)
         self.assertEqual(len(response), 0)
-
 
     def test_drop_indexes(self):
         self.collection.insert_many(self.docs)
@@ -299,22 +294,21 @@ class TestEssentialDB(unittest.TestCase):
     def test_sync_load(self):
         docs = self.docs
 
-        with EssentialDB( filepath=SYNC_DB_FILE) as db:
+        with EssentialDB(filepath=SYNC_DB_FILE) as db:
             db.insert_many(docs)
 
-        with EssentialDB( filepath=SYNC_DB_FILE) as db2:
+        with EssentialDB(filepath=SYNC_DB_FILE) as db2:
             find = db2.find_one({"_id": docs[5]["_id"]})
             self.assertEqual(find["_id"], docs[5]["_id"])
 
-
     def test_auto_sync(self):
         # test documents with ids already in place
-        db = EssentialDB( filepath=SYNC_DB_FILE, autosync=True )
+        db = EssentialDB(filepath=SYNC_DB_FILE, autosync=True)
         docs = self.docs
         db.insert_many(docs)
-        del(db)
+        del (db)
 
-        db2 = EssentialDB( filepath=SYNC_DB_FILE)
+        db2 = EssentialDB(filepath=SYNC_DB_FILE)
         find = db2.find_one({"_id": docs[5]["_id"]})
         self.assertEqual(find["_id"], docs[5]["_id"])
 

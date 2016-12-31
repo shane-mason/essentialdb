@@ -1,7 +1,6 @@
 __author__ = 'scmason'
 from essentialdb import Keys
 
-
 class LogicalOperator:
     """
     Logical)perator rmodels a list of expressions that are bnound by logical operator - inclusing::
@@ -82,6 +81,15 @@ class ComparisonOperator:
         try:
             return self.comparator_function(document[self.field], self.match_value)
         except:
+
+            try:
+                # then attempt nested lookup
+                nested_val = QueryFilter._lookup_dot_path(document, self.field)
+                return self.comparator_function(nested_val, self.match_value)
+            except:
+                # then the dotted path was not foung
+                return False
+
             return False
 
 
@@ -107,6 +115,18 @@ class EqualityOperator:
         try:
             return self.match_value == document[self.field]
         except:
+            # two major cases get us here
+            # 1. The key doesn't exist (in which case, we return false)
+            # 2. It's a dot notation nested query (in which case we will try a lookup
+            if isinstance(self.field, str) and "." in self.field:
+                try:
+                    # then attempt nested lookup
+                    nested_val = QueryFilter._lookup_dot_path(document, self.field)
+                    return self.match_value == nested_val
+                except:
+                    # then the dotted path was not foung
+                    return False
+            # then its case 1
             return False
 
 
@@ -172,3 +192,11 @@ class QueryFilter:
                 expressions.append(EqualityOperator(key, query_document[key]))
 
         return expressions
+
+    @staticmethod
+    def _lookup_dot_path(document, field):
+        path = field.split('.')
+        current = document
+        for item in path:
+            current = current[item]
+        return current
