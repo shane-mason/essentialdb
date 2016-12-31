@@ -3,12 +3,13 @@ from essentialdb import QueryFilter
 
 
 class TestQueryFilter(unittest.TestCase):
+
     def test_equality_expression(self):
         q = {'a': 'b'}
         qf = QueryFilter(q)
         self.assertEqual(len(qf.expressions), 1)
         self.assertEqual(qf.expressions[0].field, 'a')
-        self.assertEqual(qf.expressions[0].value, 'b')
+        self.assertEqual(qf.expressions[0].match_value, 'b')
 
     def test_equality_expressions(self):
         q = {'a': 'b', 'c': 'd', 'e': 'f'}

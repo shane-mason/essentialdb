@@ -87,7 +87,7 @@ class TestEssentialIndexSpeed(unittest.TestCase):
     def test_find_several(self):
         q = {'user': 'tinlor@ndve.org'}
         results = self.collection.find(q)
-        print(results[5])
+        #print(results[5])
         print(len(results))
 
     def test_find_one(self):

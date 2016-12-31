@@ -20,6 +20,9 @@ class SimpleCollection:
 
     def insert_one(self, document):
         self.documents[document["_id"]] = SimpleDocument(document)
+        for field in self.indexes:
+            self.indexes[field].update_index(self.documents[document["_id"]])
+
         return document["_id"]
 
     def find_one(self, query=None, filter=None):
@@ -43,9 +46,11 @@ class SimpleCollection:
 
     def update(self, query, update):
         to_update = self._query(query)
-        for item in to_update:
+        for document in to_update:
             for key in update:
-                item[key] = update[key]
+                document[key] = update[key]
+            for field in self.indexes:
+                self.indexes[field].update_index(document)
         return len(to_update)
 
     def count(self):
@@ -59,8 +64,10 @@ class SimpleCollection:
         else:
             to_delete = self._query(query)
             count = len(to_delete)
-            for item in to_delete:
-                del self.documents[item['_id']]
+            for document in to_delete:
+                del self.documents[document['_id']]
+                for field in self.indexes:
+                    self.indexes[field].remove_from_index(document)
         return count
 
     def set(self, key, value):

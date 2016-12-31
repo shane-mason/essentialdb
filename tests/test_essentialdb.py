@@ -246,6 +246,28 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(q)
         self.assertEqual(len(response), 1)
 
+    def test_updating_index(self):
+        self.collection.insert_many(self.docs)
+        self.collection.createIndex({"field 1": "hashed"})
+        q = {"field 1": {"$eq": self.docs[5]["field 1"]}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+        self.collection.insert_one({"field 1": "myvalue"})
+        q = {"field 1": {"$eq": "myvalue"}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+
+    def test_remove_document_from_index(self):
+        self.collection.insert_many(self.docs)
+        self.collection.createIndex({"field 1": "hashed"})
+        q = {"field 1": {"$eq": self.docs[5]["field 1"]}}
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 1)
+        self.collection.remove({"field 1": self.docs[5]["field 1"]})
+        response = self.collection.find(q)
+        self.assertEqual(len(response), 0)
+
+
     def test_drop_indexes(self):
         self.collection.insert_many(self.docs)
         self.collection.createIndex({"field 1": "hashed"})
