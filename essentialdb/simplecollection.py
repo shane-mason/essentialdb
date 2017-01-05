@@ -4,6 +4,7 @@ import random
 import pickle
 from essentialdb import QueryFilter
 from essentialdb import EssentialIndex
+from .essential_oid import EssentialOID
 
 
 class SimpleCollection:

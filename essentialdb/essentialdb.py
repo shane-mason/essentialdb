@@ -8,8 +8,7 @@
 """
 
 from essentialdb import SimpleCollection
-
-import uuid
+from .essential_oid import EssentialOID
 
 
 class EssentialDB:
@@ -106,7 +105,7 @@ class EssentialDB:
 
         """
         if "_id" not in document:
-            document["_id"] = str(uuid.uuid4())
+            document["_id"] = str(EssentialOID.generate_next_id())
 
         results = self.collection.insert_one(document)
         self._cleanup()

@@ -22,6 +22,30 @@ class DocumentGenerator:
     def __init__(self):
         self.index = 0
         self.fields = {}
+        self.word_cache = []
+        self.sentence_cache = []
+
+    def init_word_cache(self, length=10000):
+        for i in range(0, length):
+            self.word_cache.append(self.gen_word())
+
+    def init_sentence_cache(self, length=10000):
+        for i in range(0, length):
+            self.sentence_cache.append(self.gen_sentence())
+
+
+    def get_word(self):
+        if len(self.word_cache) > 0:
+            return random.choice(self.word_cache)
+        else:
+            return self.gen_word()
+
+    def get_sentence(self):
+        if len(self.sentence_cache) > 0:
+            return random.choice(self.sentence_cache)
+        else:
+            return self.gen_word()
+
 
     def gen_word(self):
         #http://norvig.com/mayzner.html
@@ -61,7 +85,7 @@ class DocumentGenerator:
     def gen_sentence(self, min_words = 3, max_words = 15):
         sentence = ""
         for i in range(random.randint(min_words, max_words)):
-            sentence += self.gen_word() + " "
+            sentence += self.get_word() + " "
 
         return sentence.strip()
 
@@ -69,7 +93,7 @@ class DocumentGenerator:
     def gen_paragraph(self, min_sentences=2, max_sentences=15):
         paragraph = ""
         for i in range(random.randint(min_sentences, max_sentences)):
-            paragraph += self.gen_sentence().capitalize() + ". "
+            paragraph += self.get_sentence().capitalize() + ". "
 
         return paragraph.strip()
 
