@@ -5,6 +5,7 @@ import struct
 import hashlib
 import binascii
 import time
+import socket
 
 def _gen_machine_part():
     machine_hash = hashlib.md5()
