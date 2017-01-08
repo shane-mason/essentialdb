@@ -8,3 +8,7 @@ install:
   - pip install -U pytest
 # command to run tests
 script: pytest
+
+matrix:
+  allow_failures:
+    - python: nightly

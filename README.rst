@@ -1,6 +1,8 @@
 EssentialDB
 ============
 
+
+
 EssentialDB is a pure Python document database developed to meet the following tenets:
 
 1. Databases shouldn't slow down development - a developer should be able to integrate a database in less than a minute.
@@ -71,4 +73,7 @@ AND and OR boolean operators allow you to make arbitrarily complex queries::
 
 
 We've tested EssentialDB under some typical use cases, and seen that it is plenty performant for many use cases with small to moderate loads.
+
+.. |Build Status| image:: https://travis-ci.org/shane-mason/essentialdb.svg?branch=master
+   :target: https://travis-ci.org/shane-mason/essentialdb
 
