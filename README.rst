@@ -1,7 +1,7 @@
 EssentialDB
 ============
 
-[CI Status]
+|CI Status|
 
 EssentialDB is a pure Python document database developed to meet the following tenets:
 
