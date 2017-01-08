@@ -6,8 +6,11 @@ python:
 # command to install dependencies
 install:
   - pip install -U pytest
+  - pip install coveralls
+  - pip install coverage
+  - pip install pytest-cov
 # command to run tests
-script: pytest
+script: pytest -v --cov essentialdb
 
 matrix:
   allow_failures:
