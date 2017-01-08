@@ -38,4 +38,5 @@ class EssentialIndex:
         if self.field_key in document:
             if document[self.field_key] in self.index:
                 self.index[document[self.field_key]].remove(document['_id'])
-
+                return True
+        return False
