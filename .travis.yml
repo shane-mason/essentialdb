@@ -12,6 +12,9 @@ install:
 # command to run tests
 script: pytest -v --cov essentialdb
 
+after_success:
+    - coveralls
+
 matrix:
   allow_failures:
     - python: nightly
