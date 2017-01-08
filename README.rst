@@ -1,7 +1,7 @@
 EssentialDB
 ============
 
-|CI Status| |Cov Status|
+|CI Status| |Cov Status| For Python 3.4, 3.5, 3.6 & 3.7(Nightly)
 
 EssentialDB is a pure Python document database developed to meet the following tenets:
 
@@ -78,4 +78,4 @@ We've tested EssentialDB under some typical use cases, and seen that it is plent
    :target: https://travis-ci.org/shane-mason/essentialdb
 
 .. |Cov Status| image:: https://coveralls.io/repos/github/shane-mason/essentialdb/badge.svg?branch=master
-:target: https://coveralls.io/github/shane-mason/essentialdb?branch=master
+   :target: https://coveralls.io/github/shane-mason/essentialdb?branch=master
