@@ -7,16 +7,17 @@ from essentialdb import EssentialIndex
 from .essential_oid import EssentialOID
 
 
-class SimpleCollection:
+class EssentialCollection:
     """
-    SimpleCollection implements a simple collection store with rudimentary disk
+    EssentialCollection implements a simple collection store with rudimentary disk
     persistence and all the logic required to query the store. This class can be
     extended to add or alter database functionality.
     """
 
-    def __init__(self):
+    def __init__(self, serializer):
         self.documents = {} # SimpleDocument()
         self.indexes = {}
+        self.serializer = serializer
 
     def insert_one(self, document):
         #self.documents[document["_id"]] = SimpleDocument(document)
@@ -81,16 +82,14 @@ class SimpleCollection:
         return None
 
     def sync(self, filepath):
-
-        with open(filepath, "wb") as fp:
-            output = {
-                "meta": {
-                    "timestamp": datetime.datetime.now()
-                },
-                "indexes": self.indexes,
-                "documents": self.documents
-            }
-            pickle.dump(output, fp)
+        output = {
+            "meta": {
+                "timestamp": datetime.datetime.now()
+            },
+            "indexes": self.indexes,
+            "documents": self.documents
+        }
+        self.serializer.dump(output, filepath)
 
     def createIndex(self, index_document, options=None):
         for key in index_document:

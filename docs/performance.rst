@@ -93,6 +93,9 @@ Functions
 * **delete_one** - Delete one document by slug
 * **delete_many** - Delete all documents where status == none
 
+These tests were run on an Amazon AWS t2.medium instance.
+
+
 The Results
 ------------
 
@@ -115,22 +118,6 @@ Records  get one  get many  get complex and   get complex or    get nested
 
 
 The following table shows the outcome of write operations.
-
-=======  =========== ==========  =========== ==========  ===========
-Records  insert many update one  update many delete one  delete many
-=======  =========== ==========  =========== ==========  ===========
-10000    0.25        0.10        0.09        0.10        0.07
-20000    0.52        0.20        0.20        0.20        0.17
-30000    0.76        0.33        0.33        0.34        0.28
-40000    1.00        0.47        0.47        0.47        0.39
-50000    1.26        0.61        0.59        0.83        0.50
-60000    1.54        0.70        0.71        0.70        0.60
-70000    1.93        0.83        0.84        0.83        0.71
-80000    2.11        1.07        1.07        1.06        0.82
-90000    2.53        1.42        1.39        1.34        0.94
-100000   2.60        1.63        1.65        1.63        1.25
-=======  =========== ==========  =========== ==========  ===========
-
 
 =======  =========== ==========  =========== ==========  ===========
 Records  insert many update one  update many delete one  delete many

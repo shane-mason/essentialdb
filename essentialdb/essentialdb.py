@@ -7,9 +7,10 @@
 
 """
 
-from essentialdb import SimpleCollection
+from essentialdb import EssentialCollection
+from essentialdb import PickleSerializer
 from .essential_oid import EssentialOID
-
+from threading import Lock
 
 class EssentialDB:
     """
@@ -42,12 +43,12 @@ class EssentialDB:
 
     """
 
-    def __init__(self, filepath=None, collection=None, autosync=False):
+    def __init__(self, filepath=None, collection=None, serializer=None, autosync=False):
         """
 
         Kwargs:
             filepath (str): Database file path, will be created if it doesn't exist.
-            collection (Collection): Defaults to SimpleCollection
+            collection (Collection): Defaults to EssentialCollection
 
         Returns:
             The unique identifier for the inserted document
@@ -57,13 +58,20 @@ class EssentialDB:
             author_db = EssentialDB(filepath="authors.db")
 
         """
+        if serializer is None:
+            serializer = PickleSerializer()
+        self.serializer = serializer
+
         if collection is None:
-            collection = SimpleCollection()
+            collection = EssentialCollection(self.serializer)
         self.collection = collection
 
         self.filepath = filepath
+
+        self.threading_lock = Lock()
         if self.filepath is not None:
-            self.collection._load(filepath)
+            with self.threading_lock:
+                self.collection._load(filepath)
 
         self.autosync = autosync
         self.dirty = False
@@ -107,7 +115,9 @@ class EssentialDB:
         if "_id" not in document:
             document["_id"] = str(EssentialOID.generate_next_id())
 
-        results = self.collection.insert_one(document)
+        with self.threading_lock:
+            results = self.collection.insert_one(document)
+
         self._cleanup()
         return results
 
@@ -142,7 +152,9 @@ class EssentialDB:
             with EssentialDB(filepath="cache.db") as request_cache:
                 request_cache.set( request.url, response.text )
         """
-        self.collection.set(key, value)
+        with self.threading_lock:
+            self.collection.set(key, value)
+
         self._cleanup()
         return key
 
@@ -246,7 +258,9 @@ class EssentialDB:
                 updated = author_db.update({'year': {'$gt': 1900}}, {'period': 'Modern'})
 
         """
-        results = self.collection.update(query, update)
+        with self.threading_lock:
+            results = self.collection.update(query, update)
+
         self._cleanup()
         return results
 
@@ -271,7 +285,8 @@ class EssentialDB:
             with EssentialDB(filepath="authors.db") as author_db:
                 document = author_db.remove({'period': 'Modern'})
         """
-        results = self.collection.remove(query)
+        with self.threading_lock:
+            results = self.collection.remove(query)
         self._cleanup()
         return results
 
