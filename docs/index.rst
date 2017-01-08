@@ -16,6 +16,7 @@ EssentialDB Documentation
 
 
 Changelog:
+
 * 0.5 - 01.07.2017 - Several changes, including::
       - Added thread lock for inserts, updates and disk writes
       - Refactored serialization into PickSerializer class

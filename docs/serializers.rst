@@ -3,7 +3,7 @@ Serializers
 ============
 
 EssentialDB does not currently support any partitioning or sharding schemes, so data is written and loaded to disk at
-once. This is okay, since EssentialDB is designed to be used mostly in-memory, but this means that disk writes are
+once. This is okay, since EssentialDB is designed to be used mostly in-memory, but it means that disk writes are
 expensive. We did some fairly extensive `benchmarking of Python 3 serializers <http://www.wrong.dog/python_serializers/>`_
 and found that Pickle is the fastest and most versatile serialization techniques and is the default mechanism in EssentialDB
 for (de)serializing documents on disk.
@@ -39,6 +39,6 @@ the load and dump methods::
     db =  essentialdb.EssentialDB(filepath=self.path, serializer=essentialdb.MsgPackSerializer())
 
 
-Beaware though, serializers not based on pickle will likely perform slower in most us cases and will not natively support
-many Python types, like datetime. You can add those to most serializers with custom hooks. EssentialDB does not include
-native support for non-builtin (de)serializers to avoid external dependencies.
+Beaware though, serializers not based on pickle will likely perform slower in most use cases. Assitionally, they will not
+natively support many Python types (like datetime). You can add those to most serializers with custom hooks. EssentialDB
+does not include native support for non-builtin (de)serializers to avoid external dependencies.
