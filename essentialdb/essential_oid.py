@@ -29,8 +29,6 @@ class EssentialOID:
 
     @staticmethod
     def generate_next_id():
-        oids = []
-
         oid = struct.pack(">i", int(time.time()))
         oid += EssentialOID._machine_part
         oid += EssentialOID._process_part

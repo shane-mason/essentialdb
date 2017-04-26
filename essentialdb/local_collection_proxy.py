@@ -7,11 +7,10 @@
 
 """
 
-from essentialdb import PickleSerializer
+from essential_collection import EssentialCollection
 from .essential_oid import EssentialOID
-from threading import Lock
 
-class EssentialDB:
+class LocalCollectionProxy:
     """
 
     EssentialDB class is the front end interface to the EssentialDB database::
@@ -42,7 +41,7 @@ class EssentialDB:
 
     """
 
-    def __init__(self, filepath=None, collection=None, serializer=None, autosync=False):
+    def __init__(self,  documents,  threading_lock,  onsync_callback,  autosync=False):
         """
 
         Kwargs:
@@ -57,21 +56,10 @@ class EssentialDB:
             author_db = EssentialDB(filepath="authors.db")
 
         """
-        if serializer is None:
-            serializer = PickleSerializer()
-        self.serializer = serializer
 
-#        if collection is None:
- #           collection = EssentialCollection(self.serializer)
-  #      self.collection = collection
-
-        self.filepath = filepath
-
-        self.threading_lock = Lock()
-        if self.filepath is not None:
-            with self.threading_lock:
-                self.collection._load(filepath)
-
+        self.collection = EssentialCollection(documents)
+        self.sync = onsync_callback
+        self.threading_lock = threading_lock
         self.autosync = autosync
         self.dirty = False
 
@@ -305,13 +293,6 @@ class EssentialDB:
         self._cleanup()
         return results
 
-    def sync(self):
-        """
-        Send a hint to the database that it should consider writing to disk soon.
-
-        Currently, this blocks and writes to disk immediately.
-        """
-
-        self.dirty = False
-        return self.collection.sync(self.filepath)
+    def _get_collection_documents_raw(self):
+        return self.collection.documents
 

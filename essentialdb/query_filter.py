@@ -88,7 +88,7 @@ class ComparisonOperator:
                 return self.comparator_function(nested_val, self.match_value)
             except:
                 # then the dotted path was not foung
-                return False
+                pass
 
             return False
 

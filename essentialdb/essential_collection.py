@@ -1,10 +1,8 @@
 __author__ = 'scmason'
-import datetime
+
 import random
-import pickle
 from essentialdb import QueryFilter
 from essentialdb import EssentialIndex
-from .essential_oid import EssentialOID
 
 
 class EssentialCollection:
@@ -14,10 +12,9 @@ class EssentialCollection:
     extended to add or alter database functionality.
     """
 
-    def __init__(self, serializer):
-        self.documents = {} # SimpleDocument()
+    def __init__(self,  documents={}):
+        self.documents = documents 
         self.indexes = {}
-        self.serializer = serializer
 
     def insert_one(self, document):
         #self.documents[document["_id"]] = SimpleDocument(document)
@@ -81,15 +78,6 @@ class EssentialCollection:
             return self.documents[key]
         return None
 
-    def sync(self, filepath):
-        output = {
-            "meta": {
-                "timestamp": datetime.datetime.now()
-            },
-            "indexes": self.indexes,
-            "documents": self.documents
-        }
-        self.serializer.dump(output, filepath)
 
     def createIndex(self, index_document, options=None):
         for key in index_document:
@@ -101,11 +89,4 @@ class EssentialCollection:
     def dropIndexes(self):
         self.indexes.clear()
 
-    def _load(self, filepath):
-        # TODO: Test if file exists
-        try:
-            with open(filepath, "rb") as fp:
-                db = pickle.load(fp)
-                self.documents = db["documents"]
-        except:
-            self.documents = {}
+
