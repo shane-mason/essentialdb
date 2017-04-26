@@ -1,10 +1,10 @@
+from essential_local import EssentialLocal
 
 class EssentialClient():
     
-    def __init__(self,  host=None,  port=None):
-        self.host = None
-        self.port = None
+    def __init__(self, host=None,  port=None):
+        self.host = host
+        self.port = port
         
-    def get_database(self,  db_id):
-        self.db_id = db_id
-        
+    def get_database(self,  db_id=None,  filepath=None):
+        return EssentialLocal(filepath=filepath)

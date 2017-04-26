@@ -1,4 +1,5 @@
-from essentialdb import EssentialDB, EssentialCollection
+#from essentialdb import EssentialDB
+
 import unittest
 from .document_generator import DocumentGenerator
 
