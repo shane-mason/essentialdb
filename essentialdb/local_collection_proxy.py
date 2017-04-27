@@ -7,7 +7,7 @@
 
 """
 
-from essential_collection import EssentialCollection
+from essentialdb import EssentialCollection
 from .essential_oid import EssentialOID
 
 class LocalCollectionProxy:

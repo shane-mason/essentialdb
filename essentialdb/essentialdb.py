@@ -61,9 +61,9 @@ class EssentialDB:
             serializer = PickleSerializer()
         self.serializer = serializer
 
-#        if collection is None:
- #           collection = EssentialCollection(self.serializer)
-  #      self.collection = collection
+        if collection is None:
+           collection = EssentialCollection(self.serializer)
+        self.collection = collection
 
         self.filepath = filepath
 

@@ -1,4 +1,4 @@
-from essential_local import EssentialLocal
+from essentialdb import EssentialLocal
 
 class EssentialClient():
     
@@ -6,5 +6,5 @@ class EssentialClient():
         self.host = host
         self.port = port
         
-    def get_database(self,  db_id=None,  filepath=None):
-        return EssentialLocal(filepath=filepath)
+    def get_database(self,  db_id=None,  filepath=None, autosync=False):
+        return EssentialLocal(filepath=filepath, autosync=autosync)
