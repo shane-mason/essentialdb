@@ -293,24 +293,26 @@ class TestEssentialDB(unittest.TestCase):
         response = self.collection.find(q)
         self.assertEqual(len(response), 0)
 
-    def xxtest_sync_load(self):
+    def test_sync_load(self):
         docs = self.docs
         db = EssentialClient().get_database(filepath=SYNC_DB_FILE).get_collection()
 
         db.insert_many(docs)
+        db.sync()
+        del(db)
 
-        with EssentialDB(filepath=SYNC_DB_FILE) as db2:
-            find = db2.find_one({"_id": docs[5]["_id"]})
-            self.assertEqual(find["_id"], docs[5]["_id"])
+        db2 = EssentialClient().get_database(filepath=SYNC_DB_FILE).get_collection()
+        find = db2.find_one({"_id": docs[5]["_id"]})
+        self.assertEqual(find["_id"], docs[5]["_id"])
 
-    def xxtest_auto_sync(self):
+    def test_auto_sync(self):
         # test documents with ids already in place
-        db = EssentialClient().get_database(filepath=SYNC_DB_FILE)
+        db = EssentialClient().get_database(filepath=SYNC_DB_FILE, autosync=True).get_collection()
         docs = self.docs
         db.insert_many(docs)
         del (db)
 
-        db2 = None #EssentialDB(filepath=SYNC_DB_FILE)
+        db2 = EssentialClient().get_database(filepath=SYNC_DB_FILE, autosync=True).get_collection()
         find = db2.find_one({"_id": docs[5]["_id"]})
         self.assertEqual(find["_id"], docs[5]["_id"])
 

@@ -76,6 +76,9 @@ class LocalCollectionProxy:
         if self.dirty:
             self.sync()
 
+    def _get_raw_documents(self):
+        return self.collection._get_raw_documents()
+
     def insert_one(self, document):
         """
         Inserts one document into the collection. If the document already

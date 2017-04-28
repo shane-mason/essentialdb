@@ -16,6 +16,9 @@ class EssentialCollection:
         self.documents = documents 
         self.indexes = {}
 
+    def _get_raw_documents(self):
+        return self.documents
+
     def insert_one(self, document):
         #self.documents[document["_id"]] = SimpleDocument(document)
         self.documents[document["_id"]] = dict(document)
