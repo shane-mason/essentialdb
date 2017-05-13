@@ -25,23 +25,28 @@ Installing is this simple::
 
 Using is this simple::
 
-    from essentialdb import EssentialDB
+            from essentialdb import EssentialDB
 
-    #create or open the database
-    author_db = EssentialDB(filepath="authors.db")
+            #create or open the database
+            authors = EssentialDB(filepath="my.db").get_collection('authors')
 
-    #insert a document into the database
-    author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
+            #insert a document into the database
+            authors.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
 
-    #create an index on last names
-    author_db.createIndex({'last': "hashed"})
+            #find some entries
+            results = authors.find({'last':'Hughes'}
 
-    #find some entries
-    results = author_db.find({'last':'Hughes'}
+            #commit the changes to disk
+            authors.sync()
 
-    #commit the changes to disk
-    author_db.sync()
+You can also use with semantics to assure that the database is closed and synced on exit::
 
+            with EssentialDB(filepath="my.db").get_collection('authors') as authors:
+
+                data = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
+                {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
+
+                authors.insert_many(data)
 
 Documents are just Python dictionaries and EssentialDB provides an API to easily store and retrieve them.
 

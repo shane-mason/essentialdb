@@ -5,9 +5,9 @@ from essentialdb import QueryFilter
 from essentialdb import EssentialIndex
 
 
-class EssentialCollection:
+class LocalCollection:
     """
-    EssentialCollection implements a simple collection store with rudimentary disk
+    LocalCollection implements a simple collection store with rudimentary disk
     persistence and all the logic required to query the store. This class can be
     extended to add or alter database functionality.
     """

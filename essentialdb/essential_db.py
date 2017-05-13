@@ -1,11 +1,51 @@
+"""
+.. module:: essentialdb
+   :platform: Unix, Windows
+   :synopsis: Embedded python document database
+
+.. moduleauthor:: Shane C Mason <shane.c.mason@gmail.com>
+
+"""
+
 from essentialdb import PickleSerializer
-from essentialdb import LocalCollectionProxy
+from essentialdb import Collection
 import datetime
 from threading import Lock
 
 
-class EssentialLocal():
+class EssentialDB:
+
     def __init__(self, filepath=None, serializer=None, autosync=False):
+        """
+
+        EssentialDB class is the front end interface to the EssentialDB database::
+
+            from essentialdb import EssentialDB
+
+            #create or open the database
+            authors = EssentialDB(filepath="my.db").get_collection('authors')
+
+            #insert a document into the database
+            authors.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
+
+            #find some entries
+            results = authors.find({'last':'Hughes'}
+
+            #commit the changes to disk
+            authors.sync()
+
+
+        You can also use with semantics to assure that the database is closed and synced on exit::
+
+            with EssentialDB(filepath="my.db").get_collection('authors') as authors:
+
+                data = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
+                {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
+
+                authors.insert_many(data)
+
+        """
+
         self.threading_lock = Lock()
         self.collections = {}
         self.filepath = filepath
@@ -22,7 +62,7 @@ class EssentialLocal():
     def get_collection(self, name='default', create=True):
         if name not in self.collections:
             if create:
-                self.collections[name] = LocalCollectionProxy({}, self.threading_lock, self.sync, self.autosync)
+                self.collections[name] = Collection({}, self.threading_lock, self.sync, self.autosync)
             else:
                 return None
         return self.collections[name]
@@ -34,9 +74,9 @@ class EssentialLocal():
             if 'collections' in file_db:
                 self.collections = {}
                 for collection in file_db['collections']:
-                    self.collections[collection] = LocalCollectionProxy(file_db['collections'][collection],
-                                                                        self.threading_lock, self.sync,
-                                                                        self.autosync)
+                    self.collections[collection] = Collection(file_db['collections'][collection],
+                                                              self.threading_lock, self.sync,
+                                                              self.autosync)
 
             elif 'documents' in file_db:
                 # Handle db files created pre v0.5"

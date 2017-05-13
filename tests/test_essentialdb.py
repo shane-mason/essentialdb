@@ -1,4 +1,4 @@
-from essentialdb import EssentialClient
+from essentialdb import EssentialDB
 import unittest
 from .document_generator import DocumentGenerator
 
@@ -9,9 +9,9 @@ SYNC_DB_FILE = "sync_test_db"
 
 class TestEssentialDB(unittest.TestCase):
     def setUp(self):
-        client = EssentialClient()
-        db = client.get_database()
-        self.collection = db.get_collection()
+
+        self.collection = EssentialDB().get_collection()
+
         generator = DocumentGenerator()
 
         def make_nested():
@@ -295,26 +295,25 @@ class TestEssentialDB(unittest.TestCase):
 
     def test_sync_load(self):
         docs = self.docs
-        db = EssentialClient().get_database(filepath=SYNC_DB_FILE).get_collection()
+        db = EssentialDB(filepath=SYNC_DB_FILE).get_collection()
 
         db.insert_many(docs)
         db.sync()
         del(db)
 
-        db2 = EssentialClient().get_database(filepath=SYNC_DB_FILE).get_collection()
+        db2 = EssentialDB(filepath=SYNC_DB_FILE).get_collection()
         find = db2.find_one({"_id": docs[5]["_id"]})
         self.assertEqual(find["_id"], docs[5]["_id"])
 
     def test_auto_sync(self):
         # test documents with ids already in place
-        db = EssentialClient().get_database(filepath=SYNC_DB_FILE, autosync=True).get_collection()
-        docs = self.docs
-        db.insert_many(docs)
-        del (db)
+        with EssentialDB(filepath=SYNC_DB_FILE, autosync=True).get_collection() as db:
+            docs = self.docs
+            db.insert_many(docs)
 
-        db2 = EssentialClient().get_database(filepath=SYNC_DB_FILE, autosync=True).get_collection()
-        find = db2.find_one({"_id": docs[5]["_id"]})
-        self.assertEqual(find["_id"], docs[5]["_id"])
+        with EssentialDB(filepath=SYNC_DB_FILE, autosync=True).get_collection() as db2:
+            find = db2.find_one({"_id": docs[5]["_id"]})
+            self.assertEqual(find["_id"], docs[5]["_id"])
 
     @classmethod
     def tearDownClass(cls):

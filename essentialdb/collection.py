@@ -1,52 +1,16 @@
-"""
-.. module:: essentialdb
-   :platform: Unix, Windows
-   :synopsis: Embedded python document database
 
-.. moduleauthor:: Shane C Mason <shane.c.mason@gmail.com>
 
-"""
-
-from essentialdb import EssentialCollection
+from essentialdb import LocalCollection
 from .essential_oid import EssentialOID
 
-class LocalCollectionProxy:
-    """
-
-    EssentialDB class is the front end interface to the EssentialDB database::
-
-        from essentialdb import EssentialDB
-
-        #create or open the database
-        author_db = EssentialDB(filepath="authors.db")
-
-        #insert a document into the database
-        author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
-
-        #find some entries
-        results = author_db.find({'last':'Hughes'}
-
-        #commit the changes to disk
-        author_db.sync()
-
-
-    You can also use with semantics to assure that the database is closed and synced on exit::
-
-        with EssentialDB(filepath="authors.db") as author_db:
-
-            authors = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
-            {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
-
-            author_db.insert_many()
-
-    """
+class Collection:
 
     def __init__(self,  documents,  threading_lock,  onsync_callback,  autosync=False):
         """
 
         Kwargs:
             filepath (str): Database file path, will be created if it doesn't exist.
-            collection (Collection): Defaults to EssentialCollection
+            collection (Collection): Defaults to LocalCollection
 
         Returns:
             The unique identifier for the inserted document
@@ -57,7 +21,7 @@ class LocalCollectionProxy:
 
         """
 
-        self.collection = EssentialCollection(documents)
+        self.collection = LocalCollection(documents)
         self.sync = onsync_callback
         self.threading_lock = threading_lock
         self.autosync = autosync
