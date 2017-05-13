@@ -22,7 +22,6 @@ Installing is this simple::
 
     pip install essentialdb
 
-
 Using is this simple::
 
     from essentialdb import EssentialDB
