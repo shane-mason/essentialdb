@@ -1,5 +1,5 @@
-Class API
-==========
+Collection API
+===============
 
-.. autoclass:: essentialdb.EssentialDB
+.. autoclass:: essentialdb.Collection
    :members:

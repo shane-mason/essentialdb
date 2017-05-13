@@ -25,19 +25,22 @@ Installing is this simple::
 
 Using is this simple::
 
-            from essentialdb import EssentialDB
+    from essentialdb import EssentialDB
 
-            #create or open the database
-            authors = EssentialDB(filepath="my.db").get_collection('authors')
+    #create or open the database
+    db = EssentialDB(filepath="my.db")
 
-            #insert a document into the database
-            authors.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
+    #get the collection
+    authors = db.get_collection('authors')
 
-            #find some entries
-            results = authors.find({'last':'Hughes'}
+    #insert a document into the collection
+    authors.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
 
-            #commit the changes to disk
-            authors.sync()
+    #find some entries
+    results = authors.find({'last':'Hughes'})
+
+    #commit the changes to disk
+    db.sync()
 
 You can also use with semantics to assure that the database is closed and synced on exit::
 

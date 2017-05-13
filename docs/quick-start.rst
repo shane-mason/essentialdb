@@ -12,20 +12,23 @@ Basic usage is straightforward::
     from essentialdb import EssentialDB
 
     #create or open the database
-    author_db = EssentialDB(filepath="authors.db")
+    db = EssentialDB(filepath="my.db")
 
-    #insert a document into the database
-    author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
+    #get the collection
+    authors = db.get_collection('authors')
+
+    #insert a document into the collection
+    authors.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
 
     #find some entries
-    results = author_db.find({'last':'Hughes'})
+    results = authors.find({'last':'Hughes'})
 
     #commit the changes to disk
-    author_db.sync()
+    db.sync()
 
 Or using the 'with' semantics to assure that write happen without having to explicitly call sync::
 
-    with EssentialDB(filepath="authors.db") as author_db:
+    with EssentialDB("my.db").get_collection('authors') as author_db:
         author_db.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902})
 
 

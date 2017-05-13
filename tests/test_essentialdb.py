@@ -7,6 +7,7 @@ __author__ = 'scmason'
 SYNC_DB_FILE = "sync_test_db"
 
 
+
 class TestEssentialDB(unittest.TestCase):
     def setUp(self):
 
@@ -307,11 +308,11 @@ class TestEssentialDB(unittest.TestCase):
 
     def test_auto_sync(self):
         # test documents with ids already in place
-        with EssentialDB(filepath=SYNC_DB_FILE, autosync=True).get_collection() as db:
+        with EssentialDB(filepath=SYNC_DB_FILE).get_collection() as db:
             docs = self.docs
             db.insert_many(docs)
 
-        with EssentialDB(filepath=SYNC_DB_FILE, autosync=True).get_collection() as db2:
+        with EssentialDB(filepath=SYNC_DB_FILE).get_collection() as db2:
             find = db2.find_one({"_id": docs[5]["_id"]})
             self.assertEqual(find["_id"], docs[5]["_id"])
 

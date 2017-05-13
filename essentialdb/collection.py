@@ -60,7 +60,7 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="authors.db") as author_db:
+            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
                 #documents are just dictionaries
                 author = {'first': 'Langston', 'last': 'Hughes', 'born': 1902}
                 author_db.insert_one(author)
@@ -102,8 +102,7 @@ class Collection:
             The unique identifier for the inserted document
 
         Example::
-
-            with EssentialDB(filepath="cache.db") as request_cache:
+            with EssentialDB(filepath="my.db").get_collection('cache') as request_cache:
                 request_cache.set( request.url, response.text )
         """
         with self.threading_lock:
@@ -145,7 +144,7 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="authors.db") as author_db:
+            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
                 authors = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
                 {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
                 author_db.insert_many()
@@ -169,7 +168,7 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="authors.db") as author_db:
+            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
                 document = author_db.find_one({'first': 'Ezra', 'last': 'Pound'})
 
         """
@@ -188,7 +187,7 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="authors.db") as author_db:
+            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
                 document = author_db.find({'last': 'Smith'})
 
         """
@@ -208,7 +207,7 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="authors.db") as author_db:
+            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
                 updated = author_db.update({'year': {'$gt': 1900}}, {'period': 'Modern'})
 
         """
@@ -236,7 +235,7 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="authors.db") as author_db:
+            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
                 document = author_db.remove({'period': 'Modern'})
         """
         with self.threading_lock:
