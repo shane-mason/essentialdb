@@ -320,6 +320,7 @@ class TestEssentialDB(unittest.TestCase):
     def tearDownClass(cls):
         import os
         try:
+            pass
             os.remove(SYNC_DB_FILE)
         except:
             pass
