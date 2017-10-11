@@ -1,5 +1,6 @@
 from cmd import Cmd
 from essentialdb import EssentialDB
+import pprint
 
 class EssentialPrompt(Cmd):
 
@@ -15,7 +16,7 @@ class EssentialPrompt(Cmd):
         self.collection = self.db.get_collection(args)
 
     def do_find(self, args):
-        print(self.collection.find())
+        pprint.pprint(self.collection.find())
 
     def do_show(self, args):
         if args == "collections":
