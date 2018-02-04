@@ -63,6 +63,8 @@ class TestEssentialDB(unittest.TestCase):
         self.collection.insert_many(self.docs)
         response = self.collection.find_one({"_id": self.docs[0]["_id"]})
         self.assertEqual(response["_id"], self.docs[0]["_id"])
+        response = self.collection.find_one(self.docs[0]["_id"])
+        self.assertEqual(response["_id"], self.docs[0]["_id"])
 
     def test_find_one_complex_query(self):
         self.collection.insert_many(self.docs)
@@ -320,7 +322,6 @@ class TestEssentialDB(unittest.TestCase):
     def tearDownClass(cls):
         import os
         try:
-            pass
             os.remove(SYNC_DB_FILE)
         except:
             pass

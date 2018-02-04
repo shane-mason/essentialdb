@@ -137,6 +137,10 @@ class QueryFilter:
     """
 
     def __init__(self, query_document):
+        # a single string should be an _id query
+        #if isinstance(query_document, str):
+        #    self.expressions = [ComparisonOperator("_id", query_document)]
+        #else:
         self.expressions = self.__parse_query(query_document, [])
 
     def execute_filter(self, documents, filter_function=None, indexes={}):
@@ -184,7 +188,7 @@ class QueryFilter:
                     log_expressions = self.__parse_query(item, log_expressions)
                 logical_operator = LogicalOperator(key, log_expressions)
                 expressions.append(logical_operator)
-            # first basic expression - something like {"field': {'$eq': 'something'}}
+            # basic expression - something like {"field': {'$eq': 'something'}}
             elif isinstance(query_document[key], dict):
                 expressions.append(ComparisonOperator(key, query_document[key]))
             # then we are left with {"field 1", "value 1"}

@@ -40,9 +40,13 @@ class LocalCollection:
         return None
 
     def _query(self, query, filter_function=None, limit=None):
-        query_filter = QueryFilter(query)
-        results = query_filter.execute_filter(self.documents, filter_function, self.indexes)
-        return results
+        # a single string should be an _id query - we can short circuit the whole process
+        if isinstance(query, str):
+            return [self.documents[query]]
+        else:
+            query_filter = QueryFilter(query)
+            results = query_filter.execute_filter(self.documents, filter_function, self.indexes)
+            return results
 
     def find(self, query=None, filter=None):
         return self._query(query, filter)
