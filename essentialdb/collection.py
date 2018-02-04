@@ -40,6 +40,7 @@ class Collection:
         if self.dirty:
             self.sync()
 
+
     def _get_raw_documents(self):
         return self.collection._get_raw_documents()
 

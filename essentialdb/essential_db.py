@@ -22,8 +22,14 @@ class EssentialDB:
 
             from essentialdb import EssentialDB
 
-            #create or open the database
-            authors = EssentialDB(filepath="my.db").get_collection('authors')
+            # create or open the database
+            db = EssentialDB(filepath="my.db")
+
+            # get (or create) the collection like pymongo
+            authors = db.authors
+
+            # slightly safer way
+            authors = db.get_collection('authors', create=False)
 
             #insert a document into the database
             authors.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
@@ -37,7 +43,7 @@ class EssentialDB:
 
         You can also use with semantics to assure that the database is closed and synced on exit::
 
-            with EssentialDB(filepath="my.db").get_collection('authors') as authors:
+            with EssentialDB(filepath="my.db").authors as authors:
 
                 data = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
                 {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
@@ -59,6 +65,9 @@ class EssentialDB:
             with self.threading_lock:
                 self._load()
 
+    def __getattr__(self, name):
+        return self.get_collection(name)
+
     def get_collection(self, name='default', create=True):
         if name not in self.collections:
             if create:
@@ -66,6 +75,9 @@ class EssentialDB:
             else:
                 return None
         return self.collections[name]
+
+    def get_collection_names(self):
+        return list(self.collections.keys())
 
     def _load(self):
         # TODO: Test if file exists

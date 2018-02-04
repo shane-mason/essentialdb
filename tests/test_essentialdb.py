@@ -1,4 +1,4 @@
-from essentialdb import EssentialDB
+from essentialdb import EssentialDB, Collection
 import unittest
 from .document_generator import DocumentGenerator
 
@@ -7,8 +7,18 @@ __author__ = 'scmason'
 SYNC_DB_FILE = "sync_test_db"
 
 
+class TestEssentialDBCollections(unittest.TestCase):
 
-class TestEssentialDB(unittest.TestCase):
+    def test_adhoc_collection(self):
+        db = EssentialDB()
+        col = db.adhoc
+        self.assertIsInstance(col, Collection)
+
+    def test_with(self):
+        with EssentialDB().adhoc as col:
+            self.assertIsInstance(col, Collection)
+
+class TestEssentialDBActions(unittest.TestCase):
     def setUp(self):
 
         self.collection = EssentialDB().get_collection()
@@ -34,6 +44,7 @@ class TestEssentialDB(unittest.TestCase):
 
         generator.set_template(template)
         self.docs = generator.gen_docs(10)
+
 
     def test_set_get(self):
         self.collection.set("my-test-number", 1)
