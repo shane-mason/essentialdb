@@ -29,8 +29,11 @@ Using is this simple::
     #create or open the database
     db = EssentialDB(filepath="my.db")
 
-    #get the collection
-    authors = db.get_collection('authors')
+    #get the collection using 'adhoc' style (like pymongo)
+    authors = db.authors
+
+    #get the collection explicitly
+    authors = db.get_collection('authors', create=True)
 
     #insert a document into the collection
     authors.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
@@ -43,7 +46,7 @@ Using is this simple::
 
 You can also use with semantics to assure that the database is closed and synced on exit::
 
-    with EssentialDB(filepath="my.db").get_collection('authors') as authors:
+    with EssentialDB(filepath="my.db").authors as authors:
 
         data = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
         {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
@@ -61,7 +64,7 @@ EssentialDB supports a very rich queries that follow the same basic form as Mong
 
     { <field1>:  <operator1>: <value1> }, ... }
 
-Most comparrison operators are supported, including equals, not equals,  less than, greater than::
+Most comparison operators are supported, including equals, not equals,  less than, greater than::
 
     author_db.find({"born" : {"$gt": 1900}})
 
