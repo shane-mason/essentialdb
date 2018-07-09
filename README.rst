@@ -83,8 +83,14 @@ AND and OR boolean operators allow you to make arbitrarily complex queries::
 
 We've tested EssentialDB under some typical use cases, and seen that it is plenty performant for many use cases with small to moderate loads.
 
+Where is it used?
+-----------------
+EssentialDB is being used in a variety of small projects. Most notably, it is powering some of the features behind kinder.farm_.
+
 .. |CI Status| image:: https://travis-ci.org/shane-mason/essentialdb.svg?branch=master
    :target: https://travis-ci.org/shane-mason/essentialdb
 
 .. |Cov Status| image:: https://coveralls.io/repos/github/shane-mason/essentialdb/badge.svg?branch=master
    :target: https://coveralls.io/github/shane-mason/essentialdb?branch=master
+
+.. _kinder.farm: https://kinder.farm
