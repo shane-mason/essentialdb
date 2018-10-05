@@ -68,10 +68,13 @@ class EssentialDB:
     def __getattr__(self, name):
         return self.get_collection(name)
 
+    def __repr__(self):
+        return "EssentialDB: " + str(self.filepath)
+
     def get_collection(self, name='default', create=True):
         if name not in self.collections:
             if create:
-                self.collections[name] = Collection({}, self.threading_lock, self.sync, self.autosync)
+                self.collections[name] = Collection({}, self.threading_lock, self.sync, self.autosync, name)
             else:
                 return None
         return self.collections[name]

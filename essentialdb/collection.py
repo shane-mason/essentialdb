@@ -5,7 +5,7 @@ from .essential_oid import EssentialOID
 
 class Collection:
 
-    def __init__(self,  documents,  threading_lock,  onsync_callback,  autosync=False):
+    def __init__(self,  documents,  threading_lock,  onsync_callback,  autosync=False, name=None):
         """
 
         Kwargs:
@@ -27,8 +27,8 @@ class Collection:
         self.sync = onsync_callback
         self.threading_lock = threading_lock
         self.autosync = autosync
+        self.collection_name = name
         self.dirty = False
-
 
     def __del__(self):
         # TODO: Test if dirty before forcing sync
@@ -42,6 +42,8 @@ class Collection:
         if self.dirty:
             self.sync()
 
+    def __repr__(self):
+        return self.collection.__class__.__name__ + ":" + str(self.collection_name)
 
     def _get_raw_documents(self):
         return self.collection._get_raw_documents()
