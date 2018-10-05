@@ -17,23 +17,23 @@ Speeding Development
 ----------------------
 
 Our first tenet is that you should be able to start developing in less than a minute. Since EssentialDB is an 'embedded' database, there is no external services or dependencies to install or administrate. The tenet here is to take you from concept to development in less than a minute.
-
-Installing is this simple::
+Install with pip::
 
     pip install essentialdb
 
-Using is this simple::
+
+Basic usage is straightforward::
 
     from essentialdb import EssentialDB
 
     #create or open the database
     db = EssentialDB(filepath="my.db")
 
-    #get the collection using 'adhoc' style (like pymongo)
-    authors = db.authors
+    #get the collection
+    authors = db.get_collection('authors')
 
-    #get the collection explicitly
-    authors = db.get_collection('authors', create=True)
+    #use the abbreviated syntax
+    books = db.books
 
     #insert a document into the collection
     authors.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902});
@@ -44,16 +44,57 @@ Using is this simple::
     #commit the changes to disk
     db.sync()
 
-You can also use with semantics to assure that the database is closed and synced on exit::
+Or using the 'with' semantics to assure that write happen without having to explicitly call sync::
 
-    with EssentialDB(filepath="my.db").authors as authors:
+    with db.authors as author_collection:
+        author_collection.insert_one({'first': 'Langston', 'last': 'Hughes', 'born': 1902})
 
-        data = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
-        {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
 
-        authors.insert_many(data)
+Insert a document::
 
-Documents are just Python dictionaries and EssentialDB provides an API to easily store and retrieve them.
+  author = {'first': 'Langston', 'last': 'Hughes', 'born': 1902}
+  author_collection.insert_one(author)
+
+Insert many documents::
+
+  authors = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
+             {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
+  author_collection.insert_many(authors)
+
+Find one document::
+
+  document = author_collection.find_one({'first': 'Ezra', 'last': 'Pound'})
+
+Find many::
+
+  documents = author_collection.find({'born': {'$gt': 1900}})
+
+Update one::
+
+  updated = author_collection.update({'_id': {'$eq': "A345i"}}, {'born': 1902})
+
+Update many::
+
+  updated = author_collection.update({'born': {'$gt': 1900}}, {'period': 'Modern'})
+
+Note that updating fields that don't currently exist in the document will add the field to the document.
+
+Remove Items::
+
+  removed = author_collection.remove({'period':'Modern'})
+
+Nested Queries::
+
+    customer_collection.insert_one({'first': 'John', 'last': 'Smith', 'address': { 'street': '10 Maple St', 'city': 'Missoula', 'state': 'MT'}})
+    results = customer_db.find({'address.state':'MT'})
+
+Note that nested query support means that key names can not include a period.
+
+Write updates to disk::
+
+    author_collection.sync()
+
+
 
 Features & Performance
 -----------------------
@@ -66,20 +107,20 @@ EssentialDB supports a very rich queries that follow the same basic form as Mong
 
 Most comparison operators are supported, including equals, not equals,  less than, greater than::
 
-    author_db.find({"born" : {"$gt": 1900}})
+    author_collection.find({"born" : {"$gt": 1900}})
 
 
 You can even test against lists of items using $in and $nin::
 
-    author_db.find({"genre" : {"$in": ["tragedy", "drama"]}})
+    author_collection.find({"genre" : {"$in": ["tragedy", "drama"]}})
 
 AND and OR boolean operators allow you to make arbitrarily complex queries::
 
     #find authors born after 1900 and before 2000
-    author_db.find({'$and':[{'born': {'$gte': 1900}},{'born': {'$lt': 2000}}]})
+    author_collection.find({'$and':[{'born': {'$gte': 1900}},{'born': {'$lt': 2000}}]})
 
     #find authors with either the first or last name John
-    author_db.find({'$or':[{'first': {'$eg': 'John'}},{'last': {'$eq': 'John'}}]})
+    author_collection.find({'$or':[{'first': {'$eg': 'John'}},{'last': {'$eq': 'John'}}]})
 
 We've tested EssentialDB under some typical use cases, and seen that it is plenty performant for many use cases with small to moderate loads.
 

@@ -17,7 +17,9 @@ class Collection:
 
         Example::
 
-            author_db = EssentialDB(filepath="authors.db")
+            library_db = EssentialDB(filepath="library.db")
+            authors = library_db.authors
+            books = library.books
 
         """
 
@@ -61,10 +63,10 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
+            with library_db.authors as author_collection:
                 #documents are just dictionaries
                 author = {'first': 'Langston', 'last': 'Hughes', 'born': 1902}
-                author_db.insert_one(author)
+                author_collection.insert_one(author)
 
         """
         if "_id" not in document:
@@ -103,7 +105,7 @@ class Collection:
             The unique identifier for the inserted document
 
         Example::
-            with EssentialDB(filepath="my.db").get_collection('cache') as request_cache:
+            with my_db.cache as request_cache:
                 request_cache.set( request.url, response.text )
         """
         with self.threading_lock:
@@ -127,7 +129,7 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="cache.db") as request_cache:
+            with my_db.cache as request_cache:
                 response.text = request_cache.get( request.url )
 
         """
@@ -145,10 +147,10 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
+            with library_db.authors as author_collection:
                 authors = [{'first': 'Langston', 'last': 'Hughes', 'born': 1902},
                 {'first': 'Ezra', 'last': 'Pound', 'born': 1885}]
-                author_db.insert_many()
+                author_collection.insert_many(authors)
 
         """
         for doc in documents:
@@ -169,8 +171,8 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
-                document = author_db.find_one({'first': 'Ezra', 'last': 'Pound'})
+            with library_db.authors as author_collection:
+                document = author_collection.find_one({'first': 'Ezra', 'last': 'Pound'})
 
         """
         return self.collection.find_one(query, filter)
@@ -188,8 +190,8 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
-                document = author_db.find({'last': 'Smith'})
+            with library_db.authors as author_collection:
+                document = author_collection.find({'last': 'Smith'})
 
         """
 
@@ -208,8 +210,8 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
-                updated = author_db.update({'year': {'$gt': 1900}}, {'period': 'Modern'})
+            with library_db.books as book_collection:
+                updated = book_collection.update({'year': {'$gt': 1900}}, {'period': 'Modern'})
 
         """
         with self.threading_lock:
@@ -236,8 +238,8 @@ class Collection:
 
         Example::
 
-            with EssentialDB(filepath="my.db").get_collection('authors') as author_db:
-                document = author_db.remove({'period': 'Modern'})
+            with library_db.books as book_collection:
+                document = book_collection.remove({'period': 'Modern'})
         """
         with self.threading_lock:
             results = self.collection.remove(query)
